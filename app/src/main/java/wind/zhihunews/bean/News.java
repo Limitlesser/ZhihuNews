@@ -1,4 +1,4 @@
-package wind.zhihunews.model;
+package wind.zhihunews.bean;
 
 import java.io.Serializable;
 import java.util.List;
@@ -12,7 +12,7 @@ public class News implements Serializable {
 
     private List<Story> stories;
 
-    private List<TopStory> top_stories;
+    private List<Story> top_stories;
 
     public String getDate() {
         return date;
@@ -30,11 +30,20 @@ public class News implements Serializable {
         this.stories = stories;
     }
 
-    public List<TopStory> getTop_stories() {
+    public List<Story> getTop_stories() {
         return top_stories;
     }
 
-    public void setTop_stories(List<TopStory> top_stories) {
+    public void setTop_stories(List<Story> top_stories) {
         this.top_stories = top_stories;
+    }
+
+    @Override
+    public String toString() {
+        return "News{" +
+                "date='" + date + '\'' +
+                ", stories=" + stories +
+                ", top_stories=" + top_stories +
+                '}';
     }
 }
