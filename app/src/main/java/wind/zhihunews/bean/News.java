@@ -1,12 +1,13 @@
 package wind.zhihunews.bean;
 
-import java.io.Serializable;
 import java.util.List;
+
+import wind.zhihunews.db.model.Story;
 
 /**
  * Created by wind on 2016/8/16.
  */
-public class News implements Serializable {
+public class News {
 
     private String date;
 
