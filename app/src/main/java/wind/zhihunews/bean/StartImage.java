@@ -8,6 +8,11 @@ public class StartImage {
     private String text;
     private String img;
 
+    public StartImage(String text, String img) {
+        this.text = text;
+        this.img = img;
+    }
+
     public String getText() {
         return text;
     }

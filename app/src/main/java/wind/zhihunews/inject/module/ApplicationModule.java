@@ -10,7 +10,7 @@ import dagger.Provides;
 /**
  *
  */
-@Module(includes = {ApiModule.class, DBModule.class, ServiceModule.class})
+@Module(includes = {ApiModule.class, DBModule.class, ServiceModule.class, PrefModule.class})
 public class ApplicationModule {
 
     Application mApplication;

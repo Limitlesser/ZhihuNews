@@ -38,15 +38,33 @@ public class SplashActivity extends BindingActivity<ActivitySplashBinding> {
 
         AppComponent.Instance.get().inject(this);
 
+        loadStartImage();
+
+        postJump2Main();
+
+    }
+
+    private void loadStartImage() {
+        final boolean exist;
+        if (exist = startImagePref.exist()) {
+            StartImage startImage = new StartImage(startImagePref.getText(), startImagePref.getImage());
+            binding.setStartImage(startImage);
+        }
         collect(newsService.startImage(ScreenUtil.getScreenWidth(this), ScreenUtil.getScreenHeight(this))
                 .subscribe(new Action1<StartImage>() {
                     @Override
                     public void call(StartImage startImage) {
-                        binding.setStartImage(startImage);
+                        startImagePref.setText(startImage.getText());
+                        startImagePref.setImage(startImage.getImg());
+                        if (!exist) {
+                            binding.setStartImage(startImage);
+                        }
                     }
                 }));
+    }
 
-        collect(Observable.timer(4000, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+    private void postJump2Main() {
+        collect(Observable.timer(2000, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
                 .subscribe(new Action1<Long>() {
                     @Override
                     public void call(Long aLong) {
@@ -55,7 +73,6 @@ public class SplashActivity extends BindingActivity<ActivitySplashBinding> {
                         finish();
                     }
                 }));
-
     }
 
 }
