@@ -3,14 +3,19 @@ package wind.zhihunews.perf;
 import android.content.Context;
 import android.text.TextUtils;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 /**
  * Created by abelianwang on 2016/8/17.
  */
+@Singleton
 public class StartImagePref extends Preference {
 
     public static final String IMAGE = "pref_start_image_img";
     public static final String TEXT = "pref_start_image_text";
 
+    @Inject
     public StartImagePref(Context context) {
         super(context);
     }

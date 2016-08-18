@@ -9,6 +9,7 @@ import dagger.Component;
 import wind.zhihunews.base.BaseActivity;
 import wind.zhihunews.binding.BindingActivity;
 import wind.zhihunews.inject.module.ApplicationModule;
+import wind.zhihunews.ui.MainActivity;
 import wind.zhihunews.ui.SplashActivity;
 
 /**
@@ -18,10 +19,12 @@ import wind.zhihunews.ui.SplashActivity;
 @Component(modules = ApplicationModule.class)
 public interface AppComponent {
 
-    void inject(SplashActivity activity);
-
 
     Application getApplication();
+
+    void inject(SplashActivity activity);
+
+    void inject(MainActivity mainActivity);
 
 
     class Instance {

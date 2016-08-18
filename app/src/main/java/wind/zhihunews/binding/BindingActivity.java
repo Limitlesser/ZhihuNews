@@ -5,7 +5,9 @@ import android.databinding.ViewDataBinding;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.Toolbar;
 
+import wind.zhihunews.R;
 import wind.zhihunews.base.BaseActivity;
 
 /**
@@ -22,7 +24,15 @@ public class BindingActivity<B extends ViewDataBinding> extends BaseActivity {
 
     protected void bindContentView(@LayoutRes int layoutResID) {
         binding = DataBindingUtil.setContentView(this, layoutResID);
+        initToolBar();
         onBind(binding);
+    }
+
+    protected void initToolBar() {
+        Toolbar toolbar = (Toolbar) binding.getRoot().findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+        }
     }
 
     protected void onBind(B binding) {

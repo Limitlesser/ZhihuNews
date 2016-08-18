@@ -4,8 +4,6 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import wind.zhihunews.db.model.DaoSession;
-import wind.zhihunews.net.Api;
 import wind.zhihunews.service.NewsService;
 import wind.zhihunews.service.impl.NewsServiceImpl;
 
@@ -17,8 +15,8 @@ public class ServiceModule {
 
     @Provides
     @Singleton
-    public NewsService providerNewsService(Api api, DaoSession daoSession) {
-        return new NewsServiceImpl(api, daoSession);
+    public NewsService providerNewsService(NewsServiceImpl newsService) {
+        return newsService;
     }
 
 }
