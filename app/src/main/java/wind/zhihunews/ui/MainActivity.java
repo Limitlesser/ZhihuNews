@@ -8,7 +8,9 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
+import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.bigkoo.convenientbanner.holder.Holder;
 
@@ -29,7 +31,9 @@ import wind.zhihunews.db.model.Story;
 import wind.zhihunews.db.model.TopStory;
 import wind.zhihunews.inject.component.AppComponent;
 import wind.zhihunews.service.NewsService;
+import wind.zhihunews.utils.DensityUtil;
 import wind.zhihunews.widget.DividerItemDecoration;
+import wind.zhihunews.widget.HeaderAdapter;
 
 /**
  * Created by wind on 2016/8/17.
@@ -40,6 +44,8 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
     NewsService newsService;
 
     BindingAdapter<ItemNewsBinding, Story> mAdapter;
+
+    ConvenientBanner<TopStory> convenientBanner;
 
 
     @Override
@@ -61,7 +67,16 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
             }
         });
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        binding.recyclerView.setAdapter(mAdapter = new BindingAdapter<>(R.layout.item_news, BR.story));
+        mAdapter = new BindingAdapter<>(R.layout.item_news, BR.story);
+        HeaderAdapter headerAdapter = new HeaderAdapter(mAdapter);
+
+        convenientBanner = new ConvenientBanner<>(this);
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, DensityUtil.dip2px(this, 200));
+        convenientBanner.setLayoutParams(params);
+
+        headerAdapter.addHeaderView(convenientBanner);
+        binding.recyclerView.setAdapter(headerAdapter);
         binding.recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
         mAdapter.setOnItemClickListener(new BindingAdapter.OnItemClickListener<ItemNewsBinding, Story>() {
             @Override
@@ -84,7 +99,7 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
     }
 
     private void resetBanner(List<TopStory> topStories) {
-        binding.convenientBanner.setPages(new CBViewHolderCreator<BannerView>() {
+        convenientBanner.setPages(new CBViewHolderCreator<BannerView>() {
             @Override
             public BannerView createHolder() {
                 return new BannerView();
