@@ -1,10 +1,18 @@
 package wind.zhihunews.ui;
 
-import android.content.Intent;
+import android.content.Context;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
+import android.view.LayoutInflater;
+import android.view.View;
+
+import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
+import com.bigkoo.convenientbanner.holder.Holder;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -15,8 +23,10 @@ import wind.zhihunews.bean.News;
 import wind.zhihunews.binding.BindingActivity;
 import wind.zhihunews.binding.BindingAdapter;
 import wind.zhihunews.databinding.ActivityMainBinding;
+import wind.zhihunews.databinding.ItemBannerBinding;
 import wind.zhihunews.databinding.ItemNewsBinding;
 import wind.zhihunews.db.model.Story;
+import wind.zhihunews.db.model.TopStory;
 import wind.zhihunews.inject.component.AppComponent;
 import wind.zhihunews.service.NewsService;
 import wind.zhihunews.widget.DividerItemDecoration;
@@ -44,26 +54,22 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
     @Override
     protected void onBind(ActivityMainBinding binding) {
         super.onBind(binding);
-        binding.setOnRefreshListener(mOnRefreshListener);
+        binding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshData();
+            }
+        });
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerView.setAdapter(mAdapter = new BindingAdapter<>(R.layout.item_news, BR.story));
         binding.recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
         mAdapter.setOnItemClickListener(new BindingAdapter.OnItemClickListener<ItemNewsBinding, Story>() {
             @Override
             public void onItemClickListener(ItemNewsBinding binding, Story data, int position) {
-                Intent intent = new Intent(MainActivity.this, StoryDetailActivity.class);
-                intent.putExtra(StoryDetailActivity.EXTRA_STORY_ID, data.getId());
-                startActivity(intent);
+                StoryDetailActivity.launch(MainActivity.this, data.getId());
             }
         });
     }
-
-    private SwipeRefreshLayout.OnRefreshListener mOnRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
-        @Override
-        public void onRefresh() {
-            refreshData();
-        }
-    };
 
     private void refreshData() {
         newsService.newsLatest()
@@ -71,9 +77,43 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
                     @Override
                     public void call(News news) {
                         mAdapter.setData(news.getStories());
+                        resetBanner(news.getTop_stories());
                         binding.swipeRefreshLayout.setRefreshing(false);
                     }
                 });
+    }
+
+    private void resetBanner(List<TopStory> topStories) {
+        binding.convenientBanner.setPages(new CBViewHolderCreator<BannerView>() {
+            @Override
+            public BannerView createHolder() {
+                return new BannerView();
+            }
+        }, topStories);
+    }
+
+    public class BannerView implements Holder<TopStory> {
+
+        ItemBannerBinding binding;
+
+        @Override
+        public View createView(Context context) {
+            View view = LayoutInflater.from(context).inflate(R.layout.item_banner, null);
+            binding = DataBindingUtil.bind(view);
+            return view;
+        }
+
+        @Override
+        public void UpdateUI(final Context context, int position, final TopStory story) {
+            binding.setTopStory(story);
+            binding.getRoot().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    StoryDetailActivity.launch(MainActivity.this, story.getId());
+                }
+            });
+
+        }
     }
 
 

@@ -14,6 +14,7 @@ import wind.zhihunews.bean.StartImage;
 import wind.zhihunews.db.model.DaoSession;
 import wind.zhihunews.db.model.Story;
 import wind.zhihunews.db.model.StoryDetail;
+import wind.zhihunews.db.model.TopStory;
 import wind.zhihunews.net.Api;
 import wind.zhihunews.service.NewsService;
 
@@ -86,11 +87,11 @@ public class NewsServiceImpl implements NewsService {
     }
 
     private void saveNews(News news) {
-        List<Story> stories = new ArrayList<>();
-        stories.addAll(news.getStories());
-        stories.addAll(news.getTop_stories());
-        for (Story story : stories) {
+        for (Story story : news.getStories()) {
             daoSession.insertOrReplace(story);
+        }
+        for (TopStory topStory : news.getTop_stories()) {
+            daoSession.insertOrReplace(topStory);
         }
     }
 

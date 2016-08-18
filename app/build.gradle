@@ -68,5 +68,7 @@ dependencies {
 
     compile 'com.android.support:multidex:1.0.1'
 
+    compile 'com.bigkoo:convenientbanner:2.0.5'
+
 
 }

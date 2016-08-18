@@ -3,6 +3,7 @@ package wind.zhihunews.bean;
 import java.util.List;
 
 import wind.zhihunews.db.model.Story;
+import wind.zhihunews.db.model.TopStory;
 
 /**
  * Created by wind on 2016/8/16.
@@ -13,7 +14,7 @@ public class News {
 
     private List<Story> stories;
 
-    private List<Story> top_stories;
+    private List<TopStory> top_stories;
 
     public String getDate() {
         return date;
@@ -31,11 +32,11 @@ public class News {
         this.stories = stories;
     }
 
-    public List<Story> getTop_stories() {
+    public List<TopStory> getTop_stories() {
         return top_stories;
     }
 
-    public void setTop_stories(List<Story> top_stories) {
+    public void setTop_stories(List<TopStory> top_stories) {
         this.top_stories = top_stories;
     }
 

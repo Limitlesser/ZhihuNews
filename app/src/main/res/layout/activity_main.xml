@@ -5,33 +5,56 @@
 
     <data>
 
-        <variable
-            name="onRefreshListener"
-            type="android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener" />
     </data>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         tools:Context="wind.zhihunews.ui.MainActivity">
 
-        <include
+        <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
-            layout="@layout/toolbar" />
-
-        <android.support.v4.widget.SwipeRefreshLayout
-            android:id="@+id/swipeRefreshLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/toolbar"
-            app:onRefreshListener="@{onRefreshListener}">
+            android:layout_height="?actionBarSize"
+            android:background="@color/colorPrimary" />
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recyclerView"
+        <android.support.design.widget.CoordinatorLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+            <android.support.design.widget.AppBarLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </android.support.v4.widget.SwipeRefreshLayout>
+                android:layout_height="wrap_content">
 
-    </RelativeLayout>
+
+                <com.bigkoo.convenientbanner.ConvenientBanner
+                    android:id="@+id/convenientBanner"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:background="@android:color/white"
+                    app:layout_scrollFlags="scroll" />
+
+
+            </android.support.design.widget.AppBarLayout>
+
+            <android.support.v4.widget.SwipeRefreshLayout
+                android:id="@+id/swipeRefreshLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+            </android.support.v4.widget.SwipeRefreshLayout>
+        </android.support.design.widget.CoordinatorLayout>
+
+    </LinearLayout>
 
 </layout>
