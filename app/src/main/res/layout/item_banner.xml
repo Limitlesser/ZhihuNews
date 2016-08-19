@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -14,12 +15,12 @@
         android:layout_height="180dp"
         android:foreground="?attr/selectableItemBackground">
 
-        <ImageView
+        <com.facebook.drawee.view.SimpleDraweeView
             android:id="@+id/story_img"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            app:imageUrl="@{topStory.image}" />
+            app:imageUrl="@{topStory.image}"
+            fresco:actualImageScaleType="centerCrop" />
 
         <FrameLayout
             android:layout_width="match_parent"

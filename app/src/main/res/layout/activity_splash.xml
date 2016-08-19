@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/tools"
-    xmlns:tools="http://schemas.android.com/apk/res-auto">
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -14,18 +15,23 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ImageView
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:id="@+id/image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            app:imageUrl="@{startImage.img}" />
+            app:imageUrl="@{startImage.img}"
+            fresco:actualImageScaleType="centerCrop"
+            fresco:fadeDuration="300" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal|bottom"
             android:layout_marginBottom="30dp"
-            android:text="@{startImage.text}" />
+            android:text="@{startImage.text}"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            tools:text="知乎日报" />
     </FrameLayout>
 
 </layout>

@@ -15,7 +15,7 @@
         android:layout_height="100dp"
         android:background="?selectableItemBackground">
 
-        <ImageView
+        <com.facebook.drawee.view.SimpleDraweeView
             android:id="@+id/image"
             android:layout_width="100dp"
             android:layout_height="match_parent"
