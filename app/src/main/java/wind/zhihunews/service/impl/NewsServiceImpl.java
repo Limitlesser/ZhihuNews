@@ -73,15 +73,7 @@ public class NewsServiceImpl implements NewsService {
                         saveNews(news);
                     }
                 })
-                .onErrorResumeNext(Observable.create(new Observable.OnSubscribe<News>() {
-                    @Override
-                    public void call(Subscriber<? super News> subscriber) {
-                        News news = new News();
-                        news.setStories(daoSession.getStoryDao().loadAll());
-                        news.setTop_stories(daoSession.getTopStoryDao().loadAll());
-                        subscriber.onNext(news);
-                    }
-                }).subscribeOn(Schedulers.io()))
+                .onErrorResumeNext(Observable.<News>empty())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
