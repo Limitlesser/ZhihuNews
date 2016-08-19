@@ -4,7 +4,8 @@ import android.app.Application;
 import android.content.Context;
 import android.support.multidex.MultiDex;
 
-import wind.zhihunews.image.ImageLoaderUtil;
+import com.facebook.drawee.backends.pipeline.Fresco;
+
 import wind.zhihunews.inject.component.AppComponent;
 
 /**
@@ -17,7 +18,7 @@ public class ZhihuApplication extends Application {
         super.onCreate();
 
         AppComponent.Instance.init(this);
-        ImageLoaderUtil.initImageLoader(this);
+        Fresco.initialize(this);
     }
 
     @Override

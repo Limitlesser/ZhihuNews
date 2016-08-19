@@ -12,7 +12,6 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class BaseActivity extends AppCompatActivity {
 
-    protected CompositeSubscription subscription = new CompositeSubscription();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -22,14 +21,10 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        subscription.clear();
     }
 
     protected String TAG() {
         return getClass().getSimpleName();
     }
 
-    protected void collect(Subscription subscription) {
-        this.subscription.add(subscription);
-    }
 }

@@ -12,4 +12,7 @@
         <item name="android:textColorPrimary">@color/textColorPrimary</item>
     </style>
 
+    <style name="AppTheme.Splash" parent="AppTheme">
+    </style>
+
 </resources>
