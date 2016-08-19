@@ -114,10 +114,16 @@ public class NewsServiceImpl implements NewsService {
                         startImagePref.setText(startImage.getText());
                     }
                 })
+                .onErrorReturn(new Func1<Throwable, StartImage>() {
+                    @Override
+                    public StartImage call(Throwable throwable) {
+                        return new StartImage(startImagePref.getText(), startImagePref.getImage());
+                    }
+                })
                 .mergeWith(Observable.create(new Observable.OnSubscribe<StartImage>() {
                     @Override
                     public void call(Subscriber<? super StartImage> subscriber) {
-                        StartImage startImage = new StartImage(startImagePref.getImage(), startImagePref.getText());
+                        StartImage startImage = new StartImage(startImagePref.getText(), startImagePref.getImage());
                         subscriber.onNext(startImage);
                     }
                 }).subscribeOn(Schedulers.io()))

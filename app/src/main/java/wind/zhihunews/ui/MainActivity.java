@@ -9,7 +9,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
@@ -100,11 +99,6 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
                         mAdapter.setData(news.getStories());
                         resetBanner(news.getTop_stories());
                         binding.swipeRefreshLayout.setRefreshing(false);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        Toast.makeText(MainActivity.this, R.string.loading_failed, Toast.LENGTH_SHORT).show();
                     }
                 });
     }
