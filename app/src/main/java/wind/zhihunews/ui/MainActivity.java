@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
@@ -54,7 +55,12 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
         bindContentView(R.layout.activity_main);
         AppComponent.Instance.get().inject(this);
         refreshData();
-        binding.swipeRefreshLayout.setRefreshing(true);
+        binding.swipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                binding.swipeRefreshLayout.setRefreshing(true);
+            }
+        });
     }
 
     @Override
@@ -68,14 +74,14 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
         });
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new BindingAdapter<>(R.layout.item_news, BR.story);
-        HeaderAdapter headerAdapter = new HeaderAdapter(mAdapter);
 
+        HeaderAdapter headerAdapter = new HeaderAdapter(mAdapter);
         convenientBanner = new ConvenientBanner<>(this);
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, DensityUtil.dip2px(this, 200));
         convenientBanner.setLayoutParams(params);
-
         headerAdapter.addHeaderView(convenientBanner);
+
         binding.recyclerView.setAdapter(headerAdapter);
         binding.recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
         mAdapter.setOnItemClickListener(new BindingAdapter.OnItemClickListener<ItemNewsBinding, Story>() {
@@ -94,6 +100,11 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
                         mAdapter.setData(news.getStories());
                         resetBanner(news.getTop_stories());
                         binding.swipeRefreshLayout.setRefreshing(false);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Toast.makeText(MainActivity.this, R.string.loading_failed, Toast.LENGTH_SHORT).show();
                     }
                 });
     }

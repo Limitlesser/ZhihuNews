@@ -1,12 +1,13 @@
 package wind.zhihunews.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.greenrobot.greendao.query.WhereCondition;
 
 import javax.inject.Inject;
 
 import rx.Observable;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import wind.zhihunews.bean.News;
@@ -14,8 +15,10 @@ import wind.zhihunews.bean.StartImage;
 import wind.zhihunews.db.model.DaoSession;
 import wind.zhihunews.db.model.Story;
 import wind.zhihunews.db.model.StoryDetail;
+import wind.zhihunews.db.model.StoryDetailDao;
 import wind.zhihunews.db.model.TopStory;
 import wind.zhihunews.net.Api;
+import wind.zhihunews.perf.StartImagePref;
 import wind.zhihunews.service.NewsService;
 
 /**
@@ -23,13 +26,18 @@ import wind.zhihunews.service.NewsService;
  */
 public class NewsServiceImpl implements NewsService {
 
+
     Api api;
+
     DaoSession daoSession;
 
+    StartImagePref startImagePref;
+
     @Inject
-    public NewsServiceImpl(Api api, DaoSession daoSession) {
+    public NewsServiceImpl(Api api, DaoSession daoSession, StartImagePref startImagePref) {
         this.api = api;
         this.daoSession = daoSession;
+        this.startImagePref = startImagePref;
     }
 
     @Override
@@ -43,6 +51,15 @@ public class NewsServiceImpl implements NewsService {
                         return news;
                     }
                 })
+                .onErrorResumeNext(Observable.create(new Observable.OnSubscribe<News>() {
+                    @Override
+                    public void call(Subscriber<? super News> subscriber) {
+                        News news = new News();
+                        news.setStories(daoSession.getStoryDao().loadAll());
+                        news.setTop_stories(daoSession.getTopStoryDao().loadAll());
+                        subscriber.onNext(news);
+                    }
+                }).subscribeOn(Schedulers.io()))
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -50,32 +67,39 @@ public class NewsServiceImpl implements NewsService {
     public Observable<News> newsBefore(String date) {
         return api.newsBefore(date)
                 .subscribeOn(Schedulers.io())
-                .map(new Func1<News, News>() {
+                .doOnNext(new Action1<News>() {
                     @Override
-                    public News call(News news) {
+                    public void call(News news) {
                         saveNews(news);
-                        return news;
                     }
                 })
+                .onErrorResumeNext(Observable.create(new Observable.OnSubscribe<News>() {
+                    @Override
+                    public void call(Subscriber<? super News> subscriber) {
+                        News news = new News();
+                        news.setStories(daoSession.getStoryDao().loadAll());
+                        news.setTop_stories(daoSession.getTopStoryDao().loadAll());
+                        subscriber.onNext(news);
+                    }
+                }).subscribeOn(Schedulers.io()))
                 .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    @Override
-    public String lastDate() {
-        return null;
     }
 
     @Override
     public Observable<StoryDetail> storyDetail(String id) {
         return api.storyDetail(id)
                 .subscribeOn(Schedulers.io())
-                .map(new Func1<StoryDetail, StoryDetail>() {
+                .doOnNext(new Action1<StoryDetail>() {
                     @Override
-                    public StoryDetail call(StoryDetail s) {
-                        saveStory(s);
-                        return s;
+                    public void call(StoryDetail storyDetail) {
+                        saveStory(storyDetail);
                     }
                 })
+                .onErrorResumeNext(daoSession.getStoryDetailDao()
+                        .queryBuilder()
+                        .where(new WhereCondition.PropertyCondition(StoryDetailDao.Properties.Id, "=", id))
+                        .rx().unique()
+                        .subscribeOn(Schedulers.io()))
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -83,6 +107,20 @@ public class NewsServiceImpl implements NewsService {
     public Observable<StartImage> startImage(Integer width, Integer height) {
         return api.startImage(width, height)
                 .subscribeOn(Schedulers.io())
+                .doOnNext(new Action1<StartImage>() {
+                    @Override
+                    public void call(StartImage startImage) {
+                        startImagePref.setImage(startImage.getImg());
+                        startImagePref.setText(startImage.getText());
+                    }
+                })
+                .mergeWith(Observable.create(new Observable.OnSubscribe<StartImage>() {
+                    @Override
+                    public void call(Subscriber<? super StartImage> subscriber) {
+                        StartImage startImage = new StartImage(startImagePref.getImage(), startImagePref.getText());
+                        subscriber.onNext(startImage);
+                    }
+                }).subscribeOn(Schedulers.io()))
                 .observeOn(AndroidSchedulers.mainThread());
     }
 

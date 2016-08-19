@@ -14,8 +14,6 @@ public interface NewsService {
 
     Observable<News> newsBefore(String date);
 
-    String lastDate();
-
     Observable<StoryDetail> storyDetail(String id);
 
     Observable<StartImage> startImage(Integer width, Integer height);

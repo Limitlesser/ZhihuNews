@@ -1,15 +1,15 @@
 package wind.zhihunews.ui;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-
-import java.util.concurrent.TimeUnit;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 
 import javax.inject.Inject;
 
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import wind.zhihunews.R;
 import wind.zhihunews.bean.StartImage;
@@ -45,34 +45,31 @@ public class SplashActivity extends BindingActivity<ActivitySplashBinding> {
     }
 
     private void loadStartImage() {
-        final boolean exist;
-        if (exist = startImagePref.exist()) {
-            StartImage startImage = new StartImage(startImagePref.getText(), startImagePref.getImage());
-            binding.setStartImage(startImage);
-        }
-        collect(newsService.startImage(ScreenUtil.getScreenWidth(this), ScreenUtil.getScreenHeight(this))
+        newsService.startImage(ScreenUtil.getScreenWidth(this), ScreenUtil.getScreenHeight(this))
                 .subscribe(new Action1<StartImage>() {
                     @Override
                     public void call(StartImage startImage) {
-                        startImagePref.setText(startImage.getText());
-                        startImagePref.setImage(startImage.getImg());
-                        if (!exist) {
-                            binding.setStartImage(startImage);
-                        }
+                        binding.setStartImage(startImage);
                     }
-                }));
+                });
     }
 
     private void postJump2Main() {
-        collect(Observable.timer(2000, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Long>() {
+        binding.image.animate().scaleX(1.1f).scaleY(1.1f)
+                .setDuration(1000)
+                .setStartDelay(1000)
+                .setListener(new AnimatorListenerAdapter() {
                     @Override
-                    public void call(Long aLong) {
+                    public void onAnimationEnd(Animator animation) {
                         Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-                        startActivity(intent);
+                        ActivityCompat.startActivity(SplashActivity.this, intent,
+                                ActivityOptionsCompat.makeCustomAnimation(SplashActivity.this,
+                                        android.R.anim.fade_in, android.R.anim.fade_out)
+                                        .toBundle());
                         finish();
                     }
-                }));
+                });
+
     }
 
 }
