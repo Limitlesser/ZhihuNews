@@ -9,7 +9,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
@@ -27,17 +26,14 @@ import wind.zhihunews.binding.BindingActivity;
 import wind.zhihunews.binding.BindingAdapter;
 import wind.zhihunews.databinding.ActivityMainBinding;
 import wind.zhihunews.databinding.ItemBannerBinding;
-import wind.zhihunews.databinding.ItemLoadMoreBinding;
 import wind.zhihunews.databinding.ItemNewsBinding;
 import wind.zhihunews.db.model.Story;
 import wind.zhihunews.db.model.TopStory;
 import wind.zhihunews.inject.component.AppComponent;
 import wind.zhihunews.service.NewsService;
-import wind.zhihunews.utils.DensityUtil;
 import wind.zhihunews.utils.ScreenUtil;
 import wind.zhihunews.widget.DividerItemDecoration;
 import wind.zhihunews.widget.HeaderAdapter;
-import wind.zhihunews.widget.LoadMoreScrollListener;
 
 /**
  * Created by wind on 2016/8/17.
@@ -57,13 +53,13 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
         super.onCreate(savedInstanceState);
         bindContentView(R.layout.activity_main);
         AppComponent.Instance.get().inject(this);
-        binding.swipeRefreshLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                binding.swipeRefreshLayout.setRefreshing(true);
-                refreshData();
-            }
-        });
+    }
+
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        binding.swipeRefreshLayout.setRefreshing(true);
+        refreshData();
     }
 
     @Override
@@ -81,7 +77,7 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
         HeaderAdapter headerAdapter = new HeaderAdapter(mAdapter);
         convenientBanner = new ConvenientBanner<>(this);
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, (int) (ScreenUtil.getScreenWidth(this) * 0.4));
+                ViewGroup.LayoutParams.MATCH_PARENT, (int) (ScreenUtil.getScreenWidth(this) * 0.5));
         convenientBanner.setLayoutParams(params);
         headerAdapter.addHeaderView(convenientBanner);
 

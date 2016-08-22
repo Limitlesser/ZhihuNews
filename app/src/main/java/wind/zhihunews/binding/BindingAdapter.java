@@ -12,8 +12,6 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-import wind.zhihunews.db.model.Story;
-
 /**
  * Created by wind on 2016/8/18.
  */
@@ -50,6 +48,10 @@ public class BindingAdapter<B extends ViewDataBinding, D> extends RecyclerView.A
         notifyItemRangeInserted(size, stories.size());
     }
 
+    protected void onBind(B binding, D data) {
+
+    }
+
     public void setOnItemClickListener(OnItemClickListener<B, D> onClickListener) {
         mOnItemClickListener = onClickListener;
     }
@@ -71,7 +73,7 @@ public class BindingAdapter<B extends ViewDataBinding, D> extends RecyclerView.A
         return data != null ? data.size() : 0;
     }
 
-    public class BindingHolder<B extends ViewDataBinding, D> extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class BindingHolder<VB extends ViewDataBinding, VD> extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private B binding;
 
@@ -86,6 +88,7 @@ public class BindingAdapter<B extends ViewDataBinding, D> extends RecyclerView.A
         public void bind(@NonNull D data) {
             binding.setVariable(variableID, data);
             binding.executePendingBindings();
+            onBind(binding, data);
         }
 
         @Override
