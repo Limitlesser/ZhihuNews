@@ -3,4 +3,6 @@
     <string name="loading_failed">加载失败</string>
     <string name="loading_more">正在加载...</string>
     <string name="shared_img" translatable="false">shared_img</string>
+    <string name="about">关于</string>
+    <string name="power_by">power by wind</string>
 </resources>

@@ -1,7 +1,7 @@
 <resources>
 
     <style name="AppThemeBase" parent="Theme.AppCompat.Light.NoActionBar">
-
+        <item name="actionOverflowMenuStyle">@style/OverflowMenu</item>
     </style>
     <!-- Base application theme. -->
     <style name="AppTheme" parent="AppThemeBase">
@@ -13,6 +13,30 @@
     </style>
 
     <style name="AppTheme.Splash" parent="AppTheme">
+
+    </style>
+
+    <style name="OverflowMenu" parent="Widget.AppCompat.PopupMenu.Overflow">
+        <!-- Required for pre-Lollipop. -->
+        <item name="overlapAnchor">false</item>
+        <item name="android:dropDownVerticalOffset">-4.0dip</item>
+    </style>
+
+    <style name="AppTheme.Toolbar" parent="Widget.AppCompat.Toolbar">
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+    </style>
+
+    <style name="AppTheme.Toolbar.Navigation" parent="AppTheme.Toolbar">
+        <item name="contentInsetStartWithNavigation">0dp</item>
+    </style>
+
+    <style name="AppTheme.CollapsingToolbar">
+        <item name="collapsedTitleTextAppearance">@style/TextAppearance.AppCompat.Title</item>
+        <item name="contentScrim">?attr/colorPrimary</item>
+        <item name="expandedTitleTextAppearance">@style/TextAppearance.AppCompat.Title</item>
+        <item name="statusBarScrim">?attr/colorPrimary</item>
     </style>
 
 </resources>
