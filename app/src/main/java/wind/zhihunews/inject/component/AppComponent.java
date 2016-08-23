@@ -11,6 +11,7 @@ import wind.zhihunews.binding.BindingActivity;
 import wind.zhihunews.inject.module.ApplicationModule;
 import wind.zhihunews.ui.MainActivity;
 import wind.zhihunews.ui.SplashActivity;
+import wind.zhihunews.ui.StoryDetailActivity;
 
 /**
  * Created by wind on 2016/8/17.
@@ -25,6 +26,8 @@ public interface AppComponent {
     void inject(SplashActivity activity);
 
     void inject(MainActivity mainActivity);
+
+    void inject(StoryDetailActivity storyDetailActivity);
 
 
     class Instance {

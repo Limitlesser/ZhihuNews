@@ -20,6 +20,7 @@
             android:layout_width="100dp"
             android:layout_height="match_parent"
             android:padding="@dimen/small_padding"
+            android:transitionName="@string/shared_img"
             app:imageUrl="@{story.images[0]}" />
 
         <TextView

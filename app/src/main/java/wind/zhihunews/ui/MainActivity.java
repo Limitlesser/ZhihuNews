@@ -4,6 +4,8 @@ import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
@@ -102,7 +104,11 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
         mAdapter.setOnItemClickListener(new BindingAdapter.OnItemClickListener<ItemNewsBinding, Story>() {
             @Override
             public void onItemClickListener(ItemNewsBinding binding, Story data, int position) {
-                StoryDetailActivity.launch(MainActivity.this, data.getId());
+                ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this,
+                        binding.image, getString(R.string.shared_img));
+                ActivityCompat.startActivity(MainActivity.this,
+                        StoryDetailActivity.newIntent(MainActivity.this, data.getId()), null
+                );
             }
         });
     }
@@ -167,7 +173,12 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
             binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    StoryDetailActivity.launch(MainActivity.this, story.getId());
+                    ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this,
+                            binding.storyImg, getString(R.string.shared_img));
+                    //T_T fresco 暂不支持共享元素动画
+                    ActivityCompat.startActivity(MainActivity.this,
+                            StoryDetailActivity.newIntent(MainActivity.this, story.getId()),
+                            null);
                 }
             });
 

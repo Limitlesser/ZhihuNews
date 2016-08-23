@@ -21,7 +21,7 @@ public interface Api {
     Observable<News> newsBefore(@Path("date") String date);
 
     @GET("news/{id}")
-    Observable<StoryDetail> storyDetail(@Path("id") String id);
+    Observable<StoryDetail> storyDetail(@Path("id") Integer id);
 
     @GET("start-image/{width}*{height}")
     Observable<StartImage> startImage(@Path("width") Integer width, @Path("height") Integer height);

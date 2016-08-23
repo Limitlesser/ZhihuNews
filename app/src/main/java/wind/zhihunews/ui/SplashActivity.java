@@ -16,7 +16,6 @@ import wind.zhihunews.bean.StartImage;
 import wind.zhihunews.binding.BindingActivity;
 import wind.zhihunews.databinding.ActivitySplashBinding;
 import wind.zhihunews.inject.component.AppComponent;
-import wind.zhihunews.perf.StartImagePref;
 import wind.zhihunews.service.NewsService;
 import wind.zhihunews.utils.ScreenUtil;
 
@@ -28,8 +27,6 @@ public class SplashActivity extends BindingActivity<ActivitySplashBinding> {
     @Inject
     NewsService newsService;
 
-    @Inject
-    StartImagePref startImagePref;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

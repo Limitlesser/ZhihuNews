@@ -73,32 +73,28 @@ public class BindingAdapter<B extends ViewDataBinding, D> extends RecyclerView.A
         return data != null ? data.size() : 0;
     }
 
-    public class BindingHolder<VB extends ViewDataBinding, VD> extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class BindingHolder<VB extends ViewDataBinding, VD> extends RecyclerView.ViewHolder {
 
         private B binding;
 
         public BindingHolder(View itemView) {
             super(itemView);
-            if (mOnItemClickListener != null) {
-                itemView.setOnClickListener(this);
-            }
             binding = DataBindingUtil.bind(itemView);
         }
 
-        public void bind(@NonNull D data) {
+        public void bind(@NonNull final D data) {
             binding.setVariable(variableID, data);
             binding.executePendingBindings();
+            if (mOnItemClickListener != null) {
+                itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mOnItemClickListener.onItemClickListener(binding, data, getAdapterPosition());
+                    }
+                });
+            }
             onBind(binding, data);
         }
 
-        @Override
-        public void onClick(View view) {
-            int position = getAdapterPosition();
-            if (position != RecyclerView.NO_POSITION) {
-                if (mOnItemClickListener != null) {
-                    mOnItemClickListener.onItemClickListener(binding, data.get(position), position);
-                }
-            }
-        }
     }
 }

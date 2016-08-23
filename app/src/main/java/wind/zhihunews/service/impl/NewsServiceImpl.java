@@ -77,20 +77,28 @@ public class NewsServiceImpl implements NewsService {
     }
 
     @Override
-    public Observable<StoryDetail> storyDetail(String id) {
-        return api.storyDetail(id)
-                .subscribeOn(Schedulers.io())
-                .doOnNext(new Action1<StoryDetail>() {
+    public Observable<StoryDetail> storyDetail(Integer id) {
+        return daoSession
+                .queryBuilder(StoryDetail.class)
+                .where(new WhereCondition.PropertyCondition(StoryDetailDao.Properties.Id, "=" + id))
+                .rx().unique()
+                .filter(new Func1<StoryDetail, Boolean>() {
                     @Override
-                    public void call(StoryDetail storyDetail) {
-                        saveStory(storyDetail);
+                    public Boolean call(StoryDetail storyDetail) {
+                        return storyDetail != null;
                     }
                 })
-                .onErrorResumeNext(daoSession.getStoryDetailDao()
-                        .queryBuilder()
-                        .where(new WhereCondition.PropertyCondition(StoryDetailDao.Properties.Id, "=", id))
-                        .rx().unique()
-                        .subscribeOn(Schedulers.io()))
+                .subscribeOn(Schedulers.io())
+                .mergeWith(
+                        api.storyDetail(id)
+                                .subscribeOn(Schedulers.io())
+                                .doOnNext(new Action1<StoryDetail>() {
+                                    @Override
+                                    public void call(StoryDetail storyDetail) {
+                                        saveStory(storyDetail);
+                                    }
+                                }))
+                .first()
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -119,6 +127,15 @@ public class NewsServiceImpl implements NewsService {
                     }
                 }).subscribeOn(Schedulers.io()))
                 .observeOn(AndroidSchedulers.mainThread());
+    }
+
+
+    @Override
+    public String detail2Html(String body) {
+        String css = "<link rel=\"stylesheet\" href=\"file:///android_asset/css/news.css\" type=\"text/css\">";
+        String html = "<html><head>" + css + "</head><body>" + body + "</body></html>";
+        html = html.replace("<div class=\"img-place-holder\">", "");
+        return html;
     }
 
     private void saveNews(News news) {
