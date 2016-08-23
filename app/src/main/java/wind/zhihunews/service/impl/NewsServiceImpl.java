@@ -73,7 +73,6 @@ public class NewsServiceImpl implements NewsService {
                         saveNews(news);
                     }
                 })
-                .onErrorResumeNext(Observable.<News>empty())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -123,11 +122,15 @@ public class NewsServiceImpl implements NewsService {
     }
 
     private void saveNews(News news) {
-        for (Story story : news.getStories()) {
-            daoSession.insertOrReplace(story);
+        if (news.getStories() != null) {
+            for (Story story : news.getStories()) {
+                daoSession.insertOrReplace(story);
+            }
         }
-        for (TopStory topStory : news.getTop_stories()) {
-            daoSession.insertOrReplace(topStory);
+        if (news.getTop_stories() != null) {
+            for (TopStory topStory : news.getTop_stories()) {
+                daoSession.insertOrReplace(topStory);
+            }
         }
     }
 

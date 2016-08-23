@@ -30,6 +30,7 @@ public class HeaderAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     public HeaderAdapter(RecyclerView.Adapter adapter) {
         this.mAdapter = adapter;
+        registerAdapterDataObserver(adapter);
         this.mHeaderViews = new ArrayList<>();
         this.mFootViews = new ArrayList<>();
     }
@@ -41,7 +42,32 @@ public class HeaderAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
      */
     public void setAdapter(RecyclerView.Adapter adapter) {
         this.mAdapter = adapter;
+        registerAdapterDataObserver(mAdapter);
         notifyDataSetChanged();
+    }
+
+    private void registerAdapterDataObserver(RecyclerView.Adapter adapter) {
+        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            public void onChanged() {
+                notifyDataSetChanged();
+            }
+
+            public void onItemRangeChanged(int positionStart, int itemCount) {
+                notifyItemRangeChanged(positionStart, itemCount);
+            }
+
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                notifyItemRangeInserted(positionStart, itemCount);
+            }
+
+            public void onItemRangeRemoved(int positionStart, int itemCount) {
+                notifyItemRangeRemoved(positionStart, itemCount);
+            }
+
+            public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
+                notifyItemMoved(fromPosition, toPosition);
+            }
+        });
     }
 
     @Override

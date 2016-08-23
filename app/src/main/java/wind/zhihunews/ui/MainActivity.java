@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.bigkoo.convenientbanner.holder.Holder;
+import com.rockerhieu.rvadapter.endless.EndlessRecyclerViewAdapter;
 
 import java.util.List;
 
@@ -46,6 +47,10 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
     BindingAdapter<ItemNewsBinding, Story> mAdapter;
 
     ConvenientBanner<TopStory> convenientBanner;
+
+    EndlessRecyclerViewAdapter endlessAdapter;
+
+    String date;
 
 
     @Override
@@ -82,6 +87,17 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
         headerAdapter.addHeaderView(convenientBanner);
 
         binding.recyclerView.setAdapter(headerAdapter);
+
+        endlessAdapter = new EndlessRecyclerViewAdapter(this, headerAdapter, new EndlessRecyclerViewAdapter.RequestToLoadMoreListener() {
+            @Override
+            public void onLoadMoreRequested() {
+                loadMore(date);
+            }
+        }, R.layout.item_load_more, false);
+
+        binding.recyclerView.setAdapter(endlessAdapter);
+
+
         binding.recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
         mAdapter.setOnItemClickListener(new BindingAdapter.OnItemClickListener<ItemNewsBinding, Story>() {
             @Override
@@ -96,9 +112,31 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
                 .subscribe(new Action1<News>() {
                     @Override
                     public void call(News news) {
+                        date = news.getDate();
                         mAdapter.setData(news.getStories());
                         resetBanner(news.getTop_stories());
                         binding.swipeRefreshLayout.setRefreshing(false);
+                        endlessAdapter.restartAppending();
+                    }
+                });
+    }
+
+    private void loadMore(String date) {
+        if (date == null) {
+            endlessAdapter.onDataReady(false);
+            return;
+        }
+        newsService.newsBefore(date)
+                .subscribe(new Action1<News>() {
+                    @Override
+                    public void call(News news) {
+                        if (news != null && news.getStories().size() > 0) {
+                            MainActivity.this.date = news.getDate();
+                            mAdapter.addData(news.getStories());
+                            endlessAdapter.onDataReady(true);
+                        } else {
+                            endlessAdapter.onDataReady(false);
+                        }
                     }
                 });
     }
