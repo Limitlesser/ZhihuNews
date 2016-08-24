@@ -44,11 +44,10 @@ public class NewsServiceImpl implements NewsService {
     public Observable<News> newsLatest() {
         return api.newsLatest()
                 .subscribeOn(Schedulers.io())
-                .map(new Func1<News, News>() {
+                .doOnNext(new Action1<News>() {
                     @Override
-                    public News call(News news) {
+                    public void call(News news) {
                         saveNews(news);
-                        return news;
                     }
                 })
                 .onErrorResumeNext(Observable.create(new Observable.OnSubscribe<News>() {

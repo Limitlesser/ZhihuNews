@@ -3,21 +3,49 @@ apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'org.greenrobot.greendao'
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.1"
+    compileSdkVersion rootProject.ext.android.compileSdkVersion
+    buildToolsVersion rootProject.ext.android.buildToolsVersion
 
     defaultConfig {
         applicationId "wind.zhihunews"
-        minSdkVersion 15
-        targetSdkVersion 24
+        minSdkVersion rootProject.ext.android.minSdkVersion
+        targetSdkVersion rootProject.ext.android.targetSdkVersion
         versionCode 1
         versionName "1.0"
 
-        multiDexEnabled true
     }
+
+    signingConfigs {
+        debug {
+            storeFile file("debug.keystore.jks")
+            storePassword "windkang"
+            keyAlias "debug"
+            keyPassword "windkang"
+        }
+
+        release{
+            storeFile file("release.keystore.jks")
+            storePassword RELEASE_STORE_PASSWORD
+            keyAlias RELEASE_KEY_ALIAS
+            keyPassword RELEASE_KEY_PASSWORD
+        }
+    }
+
+
     buildTypes {
-        release {
+
+        debug {
+            debuggable true
             minifyEnabled false
+            signingConfig signingConfigs.debug
+
+        }
+
+        release {
+            debuggable false
+            minifyEnabled true
+            zipAlignEnabled true
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -28,6 +56,11 @@ android {
     packagingOptions {
         exclude 'META-INF/maven/com.google.guava/guava/pom.properties'
         exclude 'META-INF/maven/com.google.guava/guava/pom.xml'
+    }
+
+    lintOptions{
+        checkReleaseBuilds false
+        abortOnError false
     }
 }
 
@@ -43,9 +76,9 @@ buildscript {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:24.2.0'
-    compile 'com.android.support:design:24.2.0'
-    compile 'com.android.support:recyclerview-v7:24.2.0'
+    compile rootProject.ext.dependencies.appcompatV7
+    compile rootProject.ext.dependencies.design
+    compile rootProject.ext.dependencies.recyclerview
     compile 'com.facebook.fresco:fresco:0.12.0'
     compile 'com.google.code.gson:gson:2.4'
     compile 'com.squareup.okhttp:okhttp:2.5.0'
@@ -62,11 +95,9 @@ dependencies {
     compile 'io.reactivex:rxjava:1.0.14'
 
     compile 'com.google.dagger:dagger:2.1'
-    compile 'com.google.dagger:dagger-compiler:2.1'
-    
-    compile 'org.greenrobot:greendao:3.1.0'
+    apt 'com.google.dagger:dagger-compiler:2.1'
 
-    compile 'com.android.support:multidex:1.0.1'
+    compile 'org.greenrobot:greendao:3.1.0'
 
     compile 'com.bigkoo:convenientbanner:2.0.5'
 

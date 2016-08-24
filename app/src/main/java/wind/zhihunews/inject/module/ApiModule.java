@@ -14,6 +14,7 @@ import retrofit2.Converter;
 import retrofit2.GsonConverterFactory;
 import retrofit2.Retrofit;
 import retrofit2.RxJavaCallAdapterFactory;
+import wind.zhihunews.BuildConfig;
 import wind.zhihunews.net.Api;
 
 
@@ -42,7 +43,8 @@ public class ApiModule {
     @Singleton
     public HttpLoggingInterceptor provideLogger() {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        interceptor.setLevel(BuildConfig.DEBUG ?
+                HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
         return interceptor;
     }
 

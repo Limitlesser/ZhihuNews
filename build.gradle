@@ -20,6 +20,27 @@ allprojects {
     }
 }
 
+ext {
+
+    support_version = '24.2.0'
+
+    android = [
+            compileSdkVersion: 24,
+            buildToolsVersion: "24.0.1",
+            minSdkVersion    : 15,
+            targetSdkVersion : 24
+    ]
+
+    dependencies = [
+            appcompatV7 : "com.android.support:appcompat-v7:${support_version}",
+            supportV4   : "com.android.support:support-v4:${support_version}",
+            design   : "com.android.support:design:${support_version}",
+            recyclerview: "com.android.support:recyclerview-v7:${support_version}",
+            cardview    : "com.android.support:cardview-v7:${support_version}"
+    ]
+
+}
+
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
