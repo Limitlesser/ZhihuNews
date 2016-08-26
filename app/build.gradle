@@ -25,9 +25,9 @@ android {
 
         release{
             storeFile file("release.keystore.jks")
-            storePassword RELEASE_STORE_PASSWORD
-            keyAlias RELEASE_KEY_ALIAS
-            keyPassword RELEASE_KEY_PASSWORD
+            storePassword 'windkang'
+            keyAlias 'newsrelease'
+            keyPassword 'windkang'
         }
     }
 
@@ -46,7 +46,7 @@ android {
             minifyEnabled true
             zipAlignEnabled true
             signingConfig signingConfigs.release
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro','proguard-fresco.pro'
         }
     }
     dataBinding {

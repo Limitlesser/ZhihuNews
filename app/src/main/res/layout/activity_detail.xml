@@ -42,7 +42,7 @@
                     style="@style/AppTheme.Toolbar.Navigation"
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
-                    android:background="@null"
+                    android:background="@android:color/transparent"
                     app:layout_collapseMode="pin" />
 
             </android.support.design.widget.CollapsingToolbarLayout>

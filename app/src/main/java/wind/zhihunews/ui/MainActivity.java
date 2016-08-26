@@ -1,6 +1,7 @@
 package wind.zhihunews.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -75,8 +76,9 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.about:
-                Snackbar.make(binding.getRoot(), R.string.power_by, Snackbar.LENGTH_SHORT)
-                        .show();
+                Intent intent = new Intent(this, AboutActivity.class);
+                ActivityCompat.startActivity(this, intent,
+                        ActivityOptionsCompat.makeBasic().toBundle());
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -108,8 +110,6 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
                 ViewGroup.LayoutParams.MATCH_PARENT, (int) (ScreenUtil.getScreenWidth(this) * 0.5));
         convenientBanner.setLayoutParams(params);
         headerAdapter.addHeaderView(convenientBanner);
-
-        binding.recyclerView.setAdapter(headerAdapter);
 
         endlessAdapter = new EndlessRecyclerViewAdapter(this, headerAdapter, new EndlessRecyclerViewAdapter.RequestToLoadMoreListener() {
             @Override

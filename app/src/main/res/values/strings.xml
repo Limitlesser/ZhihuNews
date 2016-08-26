@@ -5,4 +5,11 @@
     <string name="shared_img" translatable="false">shared_img</string>
     <string name="about">关于</string>
     <string name="power_by">power by wind</string>
+    <string name="declaration">本应用基于知乎日报接口开发，源代码已开放，仅供学习交流之用，不可用于商业用途。\n
+        如有侵权，请联系本人\n
+        Email : huaiguyixue@qq.com \n
+        源码 ： https://github.com/Limitlesser/ZhihuNews \n
+        如果你想支持我，请给个Star\n
+        https://github.com/Limitlesser
+    </string>
 </resources>
