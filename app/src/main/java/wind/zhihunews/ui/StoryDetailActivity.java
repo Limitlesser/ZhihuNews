@@ -79,10 +79,7 @@ public class StoryDetailActivity extends BindingActivity<ActivityDetailBinding> 
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
                 super.onProgressChanged(view, newProgress);
-                binding.progress.setProgress(newProgress);
-                if (newProgress == 100) {
-                    binding.progress.setVisibility(View.GONE);
-                }
+                binding.setProgress(newProgress);
             }
         });
     }

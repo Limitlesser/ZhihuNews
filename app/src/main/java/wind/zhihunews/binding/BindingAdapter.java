@@ -86,12 +86,7 @@ public class BindingAdapter<B extends ViewDataBinding, D> extends RecyclerView.A
             binding.setVariable(variableID, data);
             binding.executePendingBindings();
             if (mOnItemClickListener != null) {
-                itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        mOnItemClickListener.onItemClickListener(binding, data, getAdapterPosition());
-                    }
-                });
+                itemView.setOnClickListener(view -> mOnItemClickListener.onItemClickListener(binding, data, getAdapterPosition()));
             }
             onBind(binding, data);
         }

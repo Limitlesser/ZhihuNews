@@ -11,12 +11,12 @@ import java.util.Set;
  */
 public class Preference {
 
-    private static final String MIMI_PREFERENCE = "MIMI_PREFERENCE";
+    private static final String PREFERENCE_NAME = "NEWS_PREFERENCE";
 
     private SharedPreferences mPreferences;
 
     public Preference(Context context) {
-        mPreferences = context.getSharedPreferences(MIMI_PREFERENCE, Context.MODE_PRIVATE);
+        mPreferences = context.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE);
     }
 
     public SharedPreferences getPreference() {

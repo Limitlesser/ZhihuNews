@@ -9,7 +9,7 @@ import javax.inject.Singleton;
 import wind.zhihunews.bean.StartImage;
 
 /**
- * Created by abelianwang on 2016/8/17.
+ * Created by wind on 2016/8/17.
  */
 @Singleton
 public class StartImagePref extends Preference {

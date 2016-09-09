@@ -2,12 +2,9 @@ package wind.zhihunews.binding;
 
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -47,14 +44,9 @@ public class BindingActivity<B extends ViewDataBinding> extends BaseActivity {
         }
     }
 
-    protected boolean isDisplayHomeAsUpEnabled() {
-        ActionBar actionBar = getSupportActionBar();
-        return actionBar != null && (actionBar.getDisplayOptions() & ActionBar.DISPLAY_HOME_AS_UP) != 0;
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home && isDisplayHomeAsUpEnabled()) {
+        if (item.getItemId() == android.R.id.home) {
             onBackPressed(); // close this activity and return to preview activity (if there is any)
         }
         return super.onOptionsItemSelected(item);

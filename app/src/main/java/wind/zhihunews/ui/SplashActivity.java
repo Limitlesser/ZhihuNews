@@ -10,9 +10,7 @@ import android.support.v4.app.ActivityOptionsCompat;
 
 import javax.inject.Inject;
 
-import rx.functions.Action1;
 import wind.zhihunews.R;
-import wind.zhihunews.bean.StartImage;
 import wind.zhihunews.binding.BindingActivity;
 import wind.zhihunews.databinding.ActivitySplashBinding;
 import wind.zhihunews.inject.component.AppComponent;
@@ -43,9 +41,7 @@ public class SplashActivity extends BindingActivity<ActivitySplashBinding> {
 
     private void loadStartImage() {
         newsService.startImage(ScreenUtil.getScreenWidth(this), ScreenUtil.getScreenHeight(this))
-                .subscribe(startImage -> {
-                    binding.setStartImage(startImage);
-                });
+                .subscribe(startImage -> binding.setStartImage(startImage));
     }
 
     private void postJump2Main() {

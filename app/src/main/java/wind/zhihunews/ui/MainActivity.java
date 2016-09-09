@@ -5,10 +5,8 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,18 +15,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.bigkoo.convenientbanner.ConvenientBanner;
-import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.bigkoo.convenientbanner.holder.Holder;
 import com.rockerhieu.rvadapter.endless.EndlessRecyclerViewAdapter;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
-import rx.functions.Action1;
 import wind.zhihunews.BR;
 import wind.zhihunews.R;
-import wind.zhihunews.bean.News;
 import wind.zhihunews.binding.BindingActivity;
 import wind.zhihunews.binding.BindingAdapter;
 import wind.zhihunews.databinding.ActivityMainBinding;
@@ -38,7 +31,6 @@ import wind.zhihunews.db.model.Story;
 import wind.zhihunews.db.model.TopStory;
 import wind.zhihunews.inject.component.AppComponent;
 import wind.zhihunews.service.NewsService;
-import wind.zhihunews.utils.ScreenUtil;
 import wind.zhihunews.widget.DividerItemDecoration;
 import wind.zhihunews.widget.HeaderAdapter;
 
@@ -80,9 +72,8 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
                 ActivityCompat.startActivity(this, intent,
                         ActivityOptionsCompat.makeBasic().toBundle());
                 return true;
-            default:
-                return super.onOptionsItemSelected(item);
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -126,7 +117,7 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
                 .subscribe(news -> {
                     date = news.getDate();
                     mAdapter.setData(news.getStories());
-                    resetBanner(news.getTop_stories());
+                    convenientBanner.setPages(BannerView::new, news.getTop_stories());
                     binding.swipeRefreshLayout.setRefreshing(false);
                     endlessAdapter.restartAppending();
                 });
@@ -149,8 +140,9 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
                 });
     }
 
-    private void resetBanner(List<TopStory> topStories) {
-        convenientBanner.setPages(BannerView::new, topStories);
+    @Override
+    public void onBackPressed() {
+        moveTaskToBack(true);
     }
 
     public class BannerView implements Holder<TopStory> {
@@ -159,9 +151,8 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
 
         @Override
         public View createView(Context context) {
-            View view = LayoutInflater.from(context).inflate(R.layout.item_banner, null);
-            binding = DataBindingUtil.bind(view);
-            return view;
+            binding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.item_banner, null, false);
+            return binding.getRoot();
         }
 
         @Override
@@ -178,6 +169,4 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
 
         }
     }
-
-
 }
