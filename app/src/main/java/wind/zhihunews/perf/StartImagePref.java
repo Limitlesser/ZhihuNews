@@ -6,6 +6,8 @@ import android.text.TextUtils;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import wind.zhihunews.bean.StartImage;
+
 /**
  * Created by abelianwang on 2016/8/17.
  */
@@ -38,6 +40,17 @@ public class StartImagePref extends Preference {
 
     public void setText(String text) {
         saveString(TEXT, text);
+    }
+
+    public StartImage getStartImage() {
+        return new StartImage(getText(), getImage());
+    }
+
+    public void setStartImage(StartImage startImage) {
+        if (startImage != null) {
+            setImage(startImage.getImg());
+            setText(startImage.getText());
+        }
     }
 
 }

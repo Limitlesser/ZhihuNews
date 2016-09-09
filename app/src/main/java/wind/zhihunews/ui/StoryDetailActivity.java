@@ -41,23 +41,25 @@ public class StoryDetailActivity extends BindingActivity<ActivityDetailBinding> 
         super.onCreate(savedInstanceState);
         AppComponent.Instance.get().inject(this);
         bindContentView(R.layout.activity_detail);
-        Integer id = getIntent().getIntExtra(EXTRA_STORY_ID, 0);
-        newsService.storyDetail(id)
-                .subscribe(new Action1<StoryDetail>() {
-                    @Override
-                    public void call(StoryDetail storyDetail) {
-                        binding.setStoryDetail(storyDetail);
-                        binding.webView.loadDataWithBaseURL("x-data://base",
-                                newsService.detail2Html(storyDetail.getBody()),
-                                "text/html", "UTF-8", null);
-                    }
-                });
+        setNavigationBack();
+        handleIntent();
     }
 
     @Override
-    protected void initToolBar() {
-        super.initToolBar();
-        setNavigationBack();
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        handleIntent();
+    }
+
+    private void handleIntent() {
+        Integer id = getIntent().getIntExtra(EXTRA_STORY_ID, 0);
+        newsService.storyDetail(id)
+                .subscribe(storyDetail -> {
+                    binding.setStoryDetail(storyDetail);
+                    binding.webView.loadDataWithBaseURL("x-data://base",
+                            newsService.detail2Html(storyDetail.getBody()),
+                            "text/html", "UTF-8", null);
+                });
     }
 
     @Override

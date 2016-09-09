@@ -47,9 +47,14 @@ public class BindingActivity<B extends ViewDataBinding> extends BaseActivity {
         }
     }
 
+    protected boolean isDisplayHomeAsUpEnabled() {
+        ActionBar actionBar = getSupportActionBar();
+        return actionBar != null && (actionBar.getDisplayOptions() & ActionBar.DISPLAY_HOME_AS_UP) != 0;
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
+        if (item.getItemId() == android.R.id.home && isDisplayHomeAsUpEnabled()) {
             onBackPressed(); // close this activity and return to preview activity (if there is any)
         }
         return super.onOptionsItemSelected(item);

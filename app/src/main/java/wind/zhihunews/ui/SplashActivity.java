@@ -43,11 +43,8 @@ public class SplashActivity extends BindingActivity<ActivitySplashBinding> {
 
     private void loadStartImage() {
         newsService.startImage(ScreenUtil.getScreenWidth(this), ScreenUtil.getScreenHeight(this))
-                .subscribe(new Action1<StartImage>() {
-                    @Override
-                    public void call(StartImage startImage) {
-                        binding.setStartImage(startImage);
-                    }
+                .subscribe(startImage -> {
+                    binding.setStartImage(startImage);
                 });
     }
 

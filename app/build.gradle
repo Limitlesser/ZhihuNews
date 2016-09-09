@@ -1,6 +1,8 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'org.greenrobot.greendao'
+apply plugin: 'me.tatarka.retrolambda'
+
 
 android {
     compileSdkVersion rootProject.ext.android.compileSdkVersion
@@ -23,7 +25,7 @@ android {
             keyPassword "windkang"
         }
 
-        release{
+        release {
             storeFile file("release.keystore.jks")
             storePassword 'windkang'
             keyAlias 'newsrelease'
@@ -46,7 +48,7 @@ android {
             minifyEnabled true
             zipAlignEnabled true
             signingConfig signingConfigs.release
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro','proguard-fresco.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard-fresco.pro'
         }
     }
     dataBinding {
@@ -58,9 +60,13 @@ android {
         exclude 'META-INF/maven/com.google.guava/guava/pom.xml'
     }
 
-    lintOptions{
+    lintOptions {
         checkReleaseBuilds false
         abortOnError false
+    }
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
     }
 }
 
@@ -70,6 +76,7 @@ buildscript {
     }
     dependencies {
         classpath 'org.greenrobot:greendao-gradle-plugin:3.1.0'
+        classpath 'me.tatarka:gradle-retrolambda:3.2.3'
     }
 }
 

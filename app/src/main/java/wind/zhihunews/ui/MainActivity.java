@@ -95,12 +95,7 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
     @Override
     protected void onBind(ActivityMainBinding binding) {
         super.onBind(binding);
-        binding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                refreshData();
-            }
-        });
+        binding.swipeRefreshLayout.setOnRefreshListener(this::refreshData);
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new BindingAdapter<>(R.layout.item_news, BR.story);
 
@@ -111,40 +106,29 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
         convenientBanner.setLayoutParams(params);
         headerAdapter.addHeaderView(convenientBanner);
 
-        endlessAdapter = new EndlessRecyclerViewAdapter(this, headerAdapter, new EndlessRecyclerViewAdapter.RequestToLoadMoreListener() {
-            @Override
-            public void onLoadMoreRequested() {
-                loadMore(date);
-            }
-        }, R.layout.item_load_more, false);
+        endlessAdapter = new EndlessRecyclerViewAdapter(this, headerAdapter, () -> loadMore(date), R.layout.item_load_more, false);
 
         binding.recyclerView.setAdapter(endlessAdapter);
 
 
         binding.recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
-        mAdapter.setOnItemClickListener(new BindingAdapter.OnItemClickListener<ItemNewsBinding, Story>() {
-            @Override
-            public void onItemClickListener(ItemNewsBinding binding, Story data, int position) {
-                ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this,
-                        binding.image, getString(R.string.shared_img));
-                ActivityCompat.startActivity(MainActivity.this,
-                        StoryDetailActivity.newIntent(MainActivity.this, data.getId()), null
-                );
-            }
+        mAdapter.setOnItemClickListener((binding1, data, position) -> {
+            ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this,
+                    binding1.image, getString(R.string.shared_img));
+            ActivityCompat.startActivity(MainActivity.this,
+                    StoryDetailActivity.newIntent(MainActivity.this, data.getId()),
+                    null);
         });
     }
 
     private void refreshData() {
         newsService.newsLatest()
-                .subscribe(new Action1<News>() {
-                    @Override
-                    public void call(News news) {
-                        date = news.getDate();
-                        mAdapter.setData(news.getStories());
-                        resetBanner(news.getTop_stories());
-                        binding.swipeRefreshLayout.setRefreshing(false);
-                        endlessAdapter.restartAppending();
-                    }
+                .subscribe(news -> {
+                    date = news.getDate();
+                    mAdapter.setData(news.getStories());
+                    resetBanner(news.getTop_stories());
+                    binding.swipeRefreshLayout.setRefreshing(false);
+                    endlessAdapter.restartAppending();
                 });
     }
 
@@ -154,27 +138,19 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
             return;
         }
         newsService.newsBefore(date)
-                .subscribe(new Action1<News>() {
-                    @Override
-                    public void call(News news) {
-                        if (news != null && news.getStories().size() > 0) {
-                            MainActivity.this.date = news.getDate();
-                            mAdapter.addData(news.getStories());
-                            endlessAdapter.onDataReady(true);
-                        } else {
-                            endlessAdapter.onDataReady(false);
-                        }
+                .subscribe(news -> {
+                    if (news != null && news.getStories().size() > 0) {
+                        MainActivity.this.date = news.getDate();
+                        mAdapter.addData(news.getStories());
+                        endlessAdapter.onDataReady(true);
+                    } else {
+                        endlessAdapter.onDataReady(false);
                     }
                 });
     }
 
     private void resetBanner(List<TopStory> topStories) {
-        convenientBanner.setPages(new CBViewHolderCreator<BannerView>() {
-            @Override
-            public BannerView createHolder() {
-                return new BannerView();
-            }
-        }, topStories);
+        convenientBanner.setPages(BannerView::new, topStories);
     }
 
     public class BannerView implements Holder<TopStory> {
@@ -191,16 +167,13 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
         @Override
         public void UpdateUI(final Context context, int position, final TopStory story) {
             binding.setTopStory(story);
-            binding.getRoot().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this,
-                            binding.storyImg, getString(R.string.shared_img));
-                    //T_T fresco 暂不支持共享元素动画
-                    ActivityCompat.startActivity(MainActivity.this,
-                            StoryDetailActivity.newIntent(MainActivity.this, story.getId()),
-                            null);
-                }
+            binding.getRoot().setOnClickListener(v -> {
+                ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this,
+                        binding.storyImg, getString(R.string.shared_img));
+                //T_T fresco 暂不支持共享元素动画
+                ActivityCompat.startActivity(MainActivity.this,
+                        StoryDetailActivity.newIntent(MainActivity.this, story.getId()),
+                        null);
             });
 
         }

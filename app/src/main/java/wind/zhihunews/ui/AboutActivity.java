@@ -15,11 +15,7 @@ public class AboutActivity extends BindingActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         bindContentView(R.layout.activity_about);
-    }
-
-    @Override
-    protected void initToolBar() {
-        super.initToolBar();
         setNavigationBack();
     }
+
 }
