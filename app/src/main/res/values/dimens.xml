@@ -3,7 +3,6 @@
 
     <dimen name="small_padding">8dp</dimen>
 
-    <dimen name="app_bar_height">180dp</dimen>
     <dimen name="app_bar_large">230dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
 

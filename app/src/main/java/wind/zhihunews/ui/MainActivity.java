@@ -102,7 +102,7 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
         HeaderAdapter headerAdapter = new HeaderAdapter(mAdapter);
         convenientBanner = new ConvenientBanner<>(this);
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, (int) (ScreenUtil.getScreenWidth(this) * 0.5));
+                ViewGroup.LayoutParams.MATCH_PARENT, getResources().getDimensionPixelSize(R.dimen.app_bar_large));
         convenientBanner.setLayoutParams(params);
         headerAdapter.addHeaderView(convenientBanner);
 
