@@ -54,6 +54,7 @@ public class StoryDetailActivity extends BindingActivity<ActivityDetailBinding> 
     private void handleIntent() {
         Integer id = getIntent().getIntExtra(EXTRA_STORY_ID, 0);
         newsService.storyDetail(id)
+                .compose(bindToLifecycle())
                 .subscribe(storyDetail -> {
                     binding.setStoryDetail(storyDetail);
                     binding.webView.loadDataWithBaseURL("x-data://base",

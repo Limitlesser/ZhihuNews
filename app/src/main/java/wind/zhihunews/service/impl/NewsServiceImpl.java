@@ -40,7 +40,7 @@ public class NewsServiceImpl implements NewsService {
         return api.newsLatest()
                 .subscribeOn(Schedulers.io())
                 .doOnNext(this::saveNews)
-                .onErrorResumeNext(Observable.create(subscriber -> subscriber.onNext(dbNews())))
+                .onErrorResumeNext(Observable.defer(() -> Observable.just(dbNews())))
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -54,16 +54,17 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     public Observable<StoryDetail> storyDetail(Integer id) {
-        return daoSession
-                .queryBuilder(StoryDetail.class)
-                .where(new WhereCondition.PropertyCondition(StoryDetailDao.Properties.Id, "=" + id))
-                .rx().oneByOne()
-                .filter(storyDetail -> storyDetail != null)
+        return api.storyDetail(id)
+                .doOnNext(this::saveStory)
                 .subscribeOn(Schedulers.io())
                 .mergeWith(
-                        api.storyDetail(id)
-                                .doOnNext(this::saveStory)
-                                .subscribeOn(Schedulers.io()))
+                        daoSession
+                                .queryBuilder(StoryDetail.class)
+                                .where(new WhereCondition.PropertyCondition(StoryDetailDao.Properties.Id, "=" + id))
+                                .rx().oneByOne()
+                                .filter(storyDetail -> storyDetail != null)
+                                .subscribeOn(Schedulers.io())
+                )
                 .first()
                 .observeOn(AndroidSchedulers.mainThread());
     }
@@ -74,7 +75,7 @@ public class NewsServiceImpl implements NewsService {
                 .subscribeOn(Schedulers.io())
                 .doOnNext(startImage -> startImagePref.setStartImage(startImage))
                 .onErrorReturn(throwable -> startImagePref.getStartImage())
-                .mergeWith(Observable.create(subscriber -> subscriber.onNext(startImagePref.getStartImage())))
+                .mergeWith(Observable.defer(() -> Observable.just(startImagePref.getStartImage())))
                 .observeOn(AndroidSchedulers.mainThread());
     }
 

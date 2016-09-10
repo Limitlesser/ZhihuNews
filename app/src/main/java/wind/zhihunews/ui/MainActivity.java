@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.ToxicBakery.viewpager.transforms.AccordionTransformer;
 import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.holder.Holder;
 import com.rockerhieu.rvadapter.endless.EndlessRecyclerViewAdapter;
@@ -95,14 +96,15 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, getResources().getDimensionPixelSize(R.dimen.app_bar_large));
         convenientBanner.setLayoutParams(params);
+        convenientBanner.setPageTransformer(new AccordionTransformer())
+                .startTurning(4000);
         headerAdapter.addHeaderView(convenientBanner);
 
         endlessAdapter = new EndlessRecyclerViewAdapter(this, headerAdapter, () -> loadMore(date), R.layout.item_load_more, false);
 
         binding.recyclerView.setAdapter(endlessAdapter);
-
-
         binding.recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
+
         mAdapter.setOnItemClickListener((binding1, data, position) -> {
             ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this,
                     binding1.image, getString(R.string.shared_img));
@@ -114,6 +116,7 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
 
     private void refreshData() {
         newsService.newsLatest()
+                .compose(bindToLifecycle())
                 .subscribe(news -> {
                     date = news.getDate();
                     mAdapter.setData(news.getStories());
@@ -129,6 +132,7 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
             return;
         }
         newsService.newsBefore(date)
+                .compose(bindToLifecycle())
                 .subscribe(news -> {
                     if (news != null && news.getStories().size() > 0) {
                         MainActivity.this.date = news.getDate();
@@ -138,6 +142,18 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
                         endlessAdapter.onDataReady(false);
                     }
                 });
+    }
+
+    @Override
+    protected void onPause() {
+        convenientBanner.stopTurning();
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        convenientBanner.startTurning(4000);
     }
 
     @Override
