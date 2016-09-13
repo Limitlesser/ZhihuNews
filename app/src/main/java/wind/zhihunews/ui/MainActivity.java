@@ -14,7 +14,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.ToxicBakery.viewpager.transforms.AccordionTransformer;
 import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.holder.Holder;
 import com.rockerhieu.rvadapter.endless.EndlessRecyclerViewAdapter;
@@ -96,8 +95,7 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, getResources().getDimensionPixelSize(R.dimen.app_bar_large));
         convenientBanner.setLayoutParams(params);
-        convenientBanner.setPageTransformer(new AccordionTransformer())
-                .startTurning(4000);
+        convenientBanner.startTurning(4000);
         headerAdapter.addHeaderView(convenientBanner);
 
         endlessAdapter = new EndlessRecyclerViewAdapter(this, headerAdapter, () -> loadMore(date), R.layout.item_load_more, false);

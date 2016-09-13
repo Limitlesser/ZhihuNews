@@ -109,7 +109,6 @@ dependencies {
     compile 'org.greenrobot:greendao:3.1.0'
 
     compile 'com.bigkoo:convenientbanner:2.0.5'
-    compile 'com.ToxicBakery.viewpager.transforms:view-pager-transforms:1.2.32@aar'
 
     compile 'com.rockerhieu:rv-adapter-endless:1.0'
 
