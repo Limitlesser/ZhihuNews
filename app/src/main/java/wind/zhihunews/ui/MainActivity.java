@@ -19,6 +19,8 @@ import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.holder.Holder;
 import com.rockerhieu.rvadapter.endless.EndlessRecyclerViewAdapter;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import wind.zhihunews.BR;
@@ -50,6 +52,8 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
     EndlessRecyclerViewAdapter endlessAdapter;
 
     String date;
+
+    List<TopStory> topStories;
 
 
     @Override
@@ -97,7 +101,9 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
                 ViewGroup.LayoutParams.MATCH_PARENT, getResources().getDimensionPixelSize(R.dimen.app_bar_large));
         convenientBanner.setLayoutParams(params);
         convenientBanner.setPageTransformer(new AccordionTransformer())
-                .startTurning(4000);
+                .setOnItemClickListener(position1 -> ActivityCompat.startActivity(MainActivity.this,
+                        StoryDetailActivity.newIntent(MainActivity.this, topStories.get(position1).getId()),
+                        null));
         headerAdapter.addHeaderView(convenientBanner);
 
         endlessAdapter = new EndlessRecyclerViewAdapter(this, headerAdapter, () -> loadMore(date), R.layout.item_load_more, false);
@@ -105,13 +111,9 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
         binding.recyclerView.setAdapter(endlessAdapter);
         binding.recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
 
-        mAdapter.setOnItemClickListener((binding1, data, position) -> {
-            ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this,
-                    binding1.image, getString(R.string.shared_img));
-            ActivityCompat.startActivity(MainActivity.this,
-                    StoryDetailActivity.newIntent(MainActivity.this, data.getId()),
-                    null);
-        });
+        mAdapter.setOnItemClickListener((binding1, data, position) -> ActivityCompat.startActivity(MainActivity.this,
+                StoryDetailActivity.newIntent(MainActivity.this, data.getId()),
+                null));
     }
 
     private void refreshData() {
@@ -120,7 +122,7 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
                 .subscribe(news -> {
                     date = news.getDate();
                     mAdapter.setData(news.getStories());
-                    convenientBanner.setPages(BannerView::new, news.getTop_stories());
+                    convenientBanner.setPages(BannerView::new, topStories = news.getTop_stories());
                     binding.swipeRefreshLayout.setRefreshing(false);
                     endlessAdapter.restartAppending();
                 });
@@ -174,15 +176,6 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
         @Override
         public void UpdateUI(final Context context, int position, final TopStory story) {
             binding.setTopStory(story);
-            binding.getRoot().setOnClickListener(v -> {
-                ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this,
-                        binding.storyImg, getString(R.string.shared_img));
-                //T_T fresco 暂不支持共享元素动画
-                ActivityCompat.startActivity(MainActivity.this,
-                        StoryDetailActivity.newIntent(MainActivity.this, story.getId()),
-                        null);
-            });
-
         }
     }
 }

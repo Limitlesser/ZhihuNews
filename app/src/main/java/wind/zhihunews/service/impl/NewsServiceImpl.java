@@ -22,11 +22,11 @@ import wind.zhihunews.service.NewsService;
 public class NewsServiceImpl implements NewsService {
 
 
-    Api api;
+    private Api api;
 
-    DaoSession daoSession;
+    private DaoSession daoSession;
 
-    StartImagePref startImagePref;
+    private StartImagePref startImagePref;
 
     @Inject
     public NewsServiceImpl(Api api, DaoSession daoSession, StartImagePref startImagePref) {
