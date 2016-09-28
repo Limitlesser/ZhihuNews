@@ -3,11 +3,13 @@ package wind.zhihunews.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.LinearLayoutManager;
+import android.transition.AutoTransition;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -61,6 +63,11 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
         super.onCreate(savedInstanceState);
         bindContentView(R.layout.activity_main);
         AppComponent.Instance.get().inject(this);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setSharedElementEnterTransition(new AutoTransition());
+            getWindow().setSharedElementExitTransition(new AutoTransition());
+        }
     }
 
     @Override
@@ -101,9 +108,7 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
                 ViewGroup.LayoutParams.MATCH_PARENT, getResources().getDimensionPixelSize(R.dimen.app_bar_large));
         convenientBanner.setLayoutParams(params);
         convenientBanner.setPageTransformer(new AccordionTransformer())
-                .setOnItemClickListener(position1 -> ActivityCompat.startActivity(MainActivity.this,
-                        StoryDetailActivity.newIntent(MainActivity.this, topStories.get(position1).getId()),
-                        null));
+                .setOnItemClickListener(position1 -> lunchDetail(convenientBanner, topStories.get(position1).getId()));
         headerAdapter.addHeaderView(convenientBanner);
 
         endlessAdapter = new EndlessRecyclerViewAdapter(this, headerAdapter, () -> loadMore(date), R.layout.item_load_more, false);
@@ -111,9 +116,15 @@ public class MainActivity extends BindingActivity<ActivityMainBinding> {
         binding.recyclerView.setAdapter(endlessAdapter);
         binding.recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
 
-        mAdapter.setOnItemClickListener((binding1, data, position) -> ActivityCompat.startActivity(MainActivity.this,
-                StoryDetailActivity.newIntent(MainActivity.this, data.getId()),
-                null));
+        mAdapter.setOnItemClickListener((binding1, data, position) -> lunchDetail(binding1.image, data.getId()));
+    }
+
+    private void lunchDetail(View view, Integer id) {
+        ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this,
+                view, getString(R.string.shared_img));
+        ActivityCompat.startActivity(MainActivity.this,
+                StoryDetailActivity.newIntent(MainActivity.this, id),
+                optionsCompat.toBundle());
     }
 
     private void refreshData() {

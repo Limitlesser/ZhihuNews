@@ -3,20 +3,20 @@ package wind.zhihunews.ui;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.view.View;
+import android.transition.AutoTransition;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import javax.inject.Inject;
 
-import rx.functions.Action1;
 import wind.zhihunews.R;
 import wind.zhihunews.binding.BindingActivity;
 import wind.zhihunews.databinding.ActivityDetailBinding;
-import wind.zhihunews.db.model.StoryDetail;
+
 import wind.zhihunews.inject.component.AppComponent;
 import wind.zhihunews.service.NewsService;
 
@@ -43,6 +43,10 @@ public class StoryDetailActivity extends BindingActivity<ActivityDetailBinding> 
         bindContentView(R.layout.activity_detail);
         setNavigationBack();
         handleIntent();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setSharedElementEnterTransition(new AutoTransition());
+            getWindow().setSharedElementExitTransition(new AutoTransition());
+        }
     }
 
     @Override
