@@ -28,9 +28,14 @@ public class HeaderAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private final ArrayList<HeaderViewItem> mFootViews;
     private int mHeaderCount, mFooterCount;//头/尾的总个数
 
+    public HeaderAdapter() {
+        this(null);
+    }
+
     public HeaderAdapter(RecyclerView.Adapter adapter) {
         this.mAdapter = adapter;
-        registerAdapterDataObserver(adapter);
+        if (adapter != null)
+            registerAdapterDataObserver(adapter);
         this.mHeaderViews = new ArrayList<>();
         this.mFootViews = new ArrayList<>();
     }

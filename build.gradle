@@ -1,12 +1,39 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
+    ext.versions = [
+            support          : "27.0.2",
+            lifecycle        : "1.0.0",
+
+            kotlinPlugin     : '1.2.10',
+            kotlin           : '1.2.10',
+            coroutines       : '0.20',
+
+            anko             : '0.10.2',
+            glide            : '4.4.0',
+            retrofit         : '2.3.0',
+            butterKnife      : '8.8.1',
+            dagger2          : '2.14.1',
+
+            rxbinding        : '2.0.0',
+            rxlifecycle      : '2.2.0',
+
+            okio             : '1.13.0',
+            okhttp           : "3.9.1",
+
+            rxJava           : '2.1.7',
+            rxKotlin         : '2.1.0',
+            rxAndroid        : '2.0.1',
+
+            gradle           : '3.0.1'
+    ]
     repositories {
+        google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.0'
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlinPlugin"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -15,30 +42,10 @@ buildscript {
 
 allprojects {
     repositories {
+        google()
         jcenter()
         maven { url "https://jitpack.io" }
     }
-}
-
-ext {
-
-    support_version = '24.2.0'
-
-    android = [
-            compileSdkVersion: 24,
-            buildToolsVersion: "24.0.1",
-            minSdkVersion    : 15,
-            targetSdkVersion : 24
-    ]
-
-    dependencies = [
-            appcompatV7 : "com.android.support:appcompat-v7:${support_version}",
-            supportV4   : "com.android.support:support-v4:${support_version}",
-            design   : "com.android.support:design:${support_version}",
-            recyclerview: "com.android.support:recyclerview-v7:${support_version}",
-            cardview    : "com.android.support:cardview-v7:${support_version}"
-    ]
-
 }
 
 task clean(type: Delete) {
