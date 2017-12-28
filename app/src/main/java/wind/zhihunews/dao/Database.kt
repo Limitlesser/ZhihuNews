@@ -14,7 +14,11 @@ fun tableName(model: Any): String = model::class.java.simpleName
 fun toContentValues(model: Any): Array<Pair<String, *>> {
     return modelCache.getOrPut(model::class.java)
     { model::class.java.declaredFields.apply { forEach { it.isAccessible = true } } }
-            .map { it.name to it.get(model) }.toTypedArray()
+            .map { it.name to map2Db(it.get(model)) }.toTypedArray()
+}
+
+fun map2Db(value: Any): Any {
+    return value
 }
 
 fun SQLiteDatabase.insert(model: Any) {

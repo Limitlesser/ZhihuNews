@@ -1,6 +1,7 @@
 package wind.zhihunews.ui
 
 import android.arch.lifecycle.MutableLiveData
+import android.arch.lifecycle.Observer
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
@@ -20,6 +21,7 @@ import wind.zhihunews.model.TopStory
 import wind.zhihunews.net.api
 import wind.zhihunews.service.NewsService
 import wind.zhihunews.util.drawable
+import wind.zhihunews.util.observe
 import wind.zhihunews.widget.*
 
 
@@ -78,13 +80,18 @@ class MainViewModel(private val newsService: NewsService) : ViewModel() {
 
 class MainUI(private val viewModel: MainViewModel) : AnkoComponent<MainActivity> {
 
+
     override fun createView(ui: AnkoContext<MainActivity>): View {
-        return ui.owner.run {
+        fun toDetail(id: Int) {
+            ui.startActivity<DetailActivity>("id" to id)
+        }
+        return ui.apply {
             verticalLayout {
-                supportToolbar = themedToolbar(R.style.AppTheme_Toolbar)
+                val toolbar = themedToolbar(R.style.AppTheme_Toolbar)
                         .lparams(matchParent, attrDimen(R.attr.actionBarSize))
+                owner.setSupportActionBar(toolbar)
                 swipeRefreshLayout {
-                    viewModel.isRefreshing.observe(this::setRefreshing)
+                    viewModel.isRefreshing.observe(owner) { isRefreshing = it }
                     onRefresh { viewModel.news() }
                     recyclerView {
                         isVerticalScrollBarEnabled = true
@@ -94,7 +101,7 @@ class MainUI(private val viewModel: MainViewModel) : AnkoComponent<MainActivity>
                         endlessAdapter(
                                 headAdapter(false) {
                                     adapter = baseAdapter<Story>(false) {
-                                        viewModel.stories.observe {
+                                        viewModel.stories.observe(owner) {
                                             if (viewModel.newData) setData(it) else add(it)
                                         }
                                         item { source ->
@@ -104,7 +111,7 @@ class MainUI(private val viewModel: MainViewModel) : AnkoComponent<MainActivity>
                                                     id = R.id.image
                                                     padding = dip(8)
                                                     transitionNameCompat = "shared_image"
-                                                    source.subscribe { imageUriString = it.images[0] }
+                                                    source.subscribe { setImageURI(it.images[0]) }
                                                 }.lparams(dip(100), matchParent)
                                                 textView {
                                                     source.subscribe { text = it.title }
@@ -114,36 +121,35 @@ class MainUI(private val viewModel: MainViewModel) : AnkoComponent<MainActivity>
                                                 }
                                             }.lparams(matchParent, dip(100))
                                         }
-                                        itemClick { toast(it.title) }
+                                        itemClick { toDetail(it.id) }
                                     }
-                                    addHeaderView(UI(false) {
+                                    addHeaderView(owner.UI(false) {
                                         convenientBanner<TopStory> {
                                             setPageTransformer(AccordionTransformer())
                                             setOnItemClickListener { }
-                                            viewModel.topStories.observe {
+                                            viewModel.topStories.observe(ui.owner) {
                                                 setPages({
                                                     convenientHolder<TopStory> { data ->
                                                         frameLayout {
                                                             foreground = drawable(attrRes(R.attr.selectableItemBackground))
                                                             simpleDraweeView {
                                                                 data.subscribe { imageUriString = it.image }
-                                                                transitionNameCompat = getString(R.string.shared_img)
+                                                                transitionNameCompat = owner.getString(R.string.shared_img)
                                                             }.lparams(matchParent, matchParent)
                                                             frameLayout {
                                                                 backgroundColor = 0x66000000
                                                                 minimumHeight = dip(52)
-
+                                                                textView {
+                                                                    gravity = Gravity.CENTER_VERTICAL
+                                                                    horizontalPadding = dip(10)
+                                                                    textColor = Color.WHITE
+                                                                    textSize = 17f
+                                                                    data.subscribe { text = it.title }
+                                                                }.lparams(wrapContent, wrapContent) {
+                                                                    gravity = Gravity.CENTER_VERTICAL
+                                                                }
                                                             }.lparams(matchParent, wrapContent) {
                                                                 gravity = Gravity.BOTTOM
-                                                            }
-                                                            textView {
-                                                                gravity = Gravity.CENTER_VERTICAL
-                                                                horizontalPadding = dip(10)
-                                                                textColor = Color.WHITE
-                                                                textSize = 17f
-                                                                data.subscribe { text = it.title }
-                                                            }.lparams(wrapContent, wrapContent) {
-                                                                gravity = Gravity.CENTER_VERTICAL
                                                             }
                                                         }
                                                     }
@@ -155,10 +161,10 @@ class MainUI(private val viewModel: MainViewModel) : AnkoComponent<MainActivity>
                                 onLoadMore = { viewModel.newBefore() },
                                 loadView = R.layout.item_load_more
                         ) {
-                            viewModel.isLoadingMore.observe {
+                            viewModel.isLoadingMore.observe(owner) {
                                 if (!it) onDataReady(viewModel.hasMoreData.value!!)
                             }
-                            viewModel.hasMoreData.observe {
+                            viewModel.hasMoreData.observe(owner) {
                                 if (it) restartAppending() else stopAppending()
                             }
                         }
@@ -166,6 +172,6 @@ class MainUI(private val viewModel: MainViewModel) : AnkoComponent<MainActivity>
                     }
                 }.lparams(matchParent, matchParent)
             }
-        }
+        }.view
     }
 }

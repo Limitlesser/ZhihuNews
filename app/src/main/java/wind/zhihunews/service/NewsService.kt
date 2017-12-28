@@ -69,6 +69,6 @@ class NewsService(private val api: Api) {
     }
 
     private fun saveStory(storyDetail: StoryDetail) {
-        database.use { replace(storyDetail) }
+//        database.use { replace(storyDetail) }
     }
 }
