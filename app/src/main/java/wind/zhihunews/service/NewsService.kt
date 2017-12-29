@@ -1,13 +1,11 @@
 package wind.zhihunews.service
 
-import wind.zhihunews.dao.database
-import wind.zhihunews.dao.replace
-import wind.zhihunews.model.*
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import org.jetbrains.anko.db.classParser
-import org.jetbrains.anko.db.select
+import org.jetbrains.anko.db.*
+import wind.zhihunews.dao.database
+import wind.zhihunews.model.*
 import wind.zhihunews.net.Api
 
 
@@ -20,6 +18,7 @@ class NewsService(private val api: Api) {
         return api.newsLatest()
                 .subscribeOn(Schedulers.io())
                 .doOnSuccess(this::saveNews)
+                .onErrorResumeNext { Single.fromCallable { dbNews() } }
                 .observeOn(AndroidSchedulers.mainThread())
     }
 
@@ -34,6 +33,16 @@ class NewsService(private val api: Api) {
         return api.storyDetail(id)
                 .doOnSuccess(this::saveStory)
                 .subscribeOn(Schedulers.io())
+                .mergeWith {
+                    Single.fromCallable {
+                        database.use {
+                            select("StoryDetail").
+                                    whereArgs("id=$id").parseSingle(classParser<StoryDetail>())
+                        }
+                    }
+                }
+                .firstElement()
+                .toSingle()
                 .observeOn(AndroidSchedulers.mainThread())
     }
 
@@ -60,15 +69,31 @@ class NewsService(private val api: Api) {
     }
 
     private fun saveNews(news: News) {
-//        database.use {
-//            delete("Story")
-//            delete("TopStory")
-//            insertList(news.stories)
-//            insertList(news.top_stories)
-//        }
+        database.use {
+            delete("Story")
+            delete("TopStory")
+            news.stories.forEach {
+                insert("Story", "id" to it.id, "title" to it.title,
+                        "image" to it.firstImage)
+            }
+            news.top_stories?.forEach {
+                insert("TopStory", "id" to it.id,
+                        "type" to it.type,
+                        "title" to it.title,
+                        "image" to it.image,
+                        "ga_prefix" to it.ga_prefix)
+            }
+        }
     }
 
     private fun saveStory(storyDetail: StoryDetail) {
-//        database.use { replace(storyDetail) }
+        database.use {
+            replace("StoryDetail", "id" to storyDetail.id,
+                    "body" to storyDetail.body,
+                    "title" to storyDetail.title,
+                    "image" to storyDetail.image,
+                    "image_source" to storyDetail.image_source,
+                    "share_url" to storyDetail.share_url)
+        }
     }
 }

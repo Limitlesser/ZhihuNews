@@ -16,5 +16,7 @@ fun Context.attrDimen(@AttrRes attr: Int): Int = attr(attr).getDimension(display
 
 fun Context.attrRes(@AttrRes attr: Int): Int = attr(attr).resourceId
 
+fun Context.attrColor(@AttrRes attr: Int): Int = attr(attr).data
+
 fun <T> AnkoContext<T>.attrDimen(@AttrRes attr: Int) = ctx.attrDimen(attr)
 fun <T> AnkoContext<T>.attrRes(@AttrRes attr: Int) = ctx.attrRes(attr)

@@ -14,7 +14,7 @@ class DatabaseOpenHelper(ctx: Context) : ManagedSQLiteOpenHelper(ctx, "db", vers
                 "id" to INTEGER + PRIMARY_KEY,
                 "body" to TEXT,
                 "title" to TEXT,
-                "images" to TEXT)
+                "image" to TEXT)
         db.createTable("StoryDetail", true,
                 "id" to INTEGER + PRIMARY_KEY,
                 "body" to TEXT,

@@ -1,15 +1,20 @@
 package wind.zhihunews.ui
 
+import android.arch.lifecycle.GenericLifecycleObserver
+import android.arch.lifecycle.Lifecycle
 import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.Observer
 import android.graphics.Color
 import android.os.Bundle
+import android.support.v4.app.ActivityOptionsCompat
+import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Gravity
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import com.ToxicBakery.viewpager.transforms.AccordionTransformer
 import org.jetbrains.anko.*
-import org.jetbrains.anko.appcompat.v7.themedToolbar
+import org.jetbrains.anko.appcompat.v7.toolbar
 import org.jetbrains.anko.recyclerview.v7.recyclerView
 import org.jetbrains.anko.support.v4.onRefresh
 import org.jetbrains.anko.support.v4.swipeRefreshLayout
@@ -35,6 +40,17 @@ class MainActivity : BaseActivity() {
         viewModel.error.observe { toast(it.localizedMessage) }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.about) {
+            startActivity<AboutActivity>()
+        }
+        return super.onOptionsItemSelected(item)
+    }
 
 }
 
@@ -43,7 +59,7 @@ class MainViewModel(private val newsService: NewsService) : ViewModel() {
     val stories = MutableLiveData<List<Story>>()
     val topStories = MutableLiveData<List<TopStory>>()
     @Volatile
-    var newData = true
+    var isNewData = true
     val isRefreshing = MutableLiveData<Boolean>()
     val isLoadingMore = MutableLiveData<Boolean>()
     val hasMoreData = MutableLiveData<Boolean>()
@@ -53,7 +69,7 @@ class MainViewModel(private val newsService: NewsService) : ViewModel() {
                 .doOnSubscribe { isRefreshing.postValue(true) }
                 .doFinally { isRefreshing.postValue(false) }
                 .subscribe({ news ->
-                    newData = true
+                    isNewData = true
                     date = news.date
                     this.stories.postValue(news.stories)
                     this.topStories.postValue(news.top_stories)
@@ -61,7 +77,7 @@ class MainViewModel(private val newsService: NewsService) : ViewModel() {
                 }, error::postValue)
     }
 
-    fun newBefore() {
+    fun newsBefore() {
         if (date == null) {
             hasMoreData.postValue(false)
             return
@@ -70,7 +86,7 @@ class MainViewModel(private val newsService: NewsService) : ViewModel() {
                 .doOnSubscribe { isLoadingMore.postValue(true) }
                 .doFinally { isLoadingMore.postValue(false) }
                 .subscribe({ news ->
-                    newData = false
+                    isNewData = false
                     date = news.date
                     this.stories.postValue(news.stories)
                     hasMoreData.postValue(news.stories.isNotEmpty())
@@ -82,51 +98,38 @@ class MainUI(private val viewModel: MainViewModel) : AnkoComponent<MainActivity>
 
 
     override fun createView(ui: AnkoContext<MainActivity>): View {
-        fun toDetail(id: Int) {
-            ui.startActivity<DetailActivity>("id" to id)
+
+        fun toDetail(view: View, id: Int) {
+            ui.owner.apply {
+                startActivity(intentFor<DetailActivity>("id" to id),
+                        ActivityOptionsCompat.makeSceneTransitionAnimation(this, view,
+                                getString(R.string.shared_img)).toBundle())
+            }
         }
-        return ui.apply {
+        return ui.owner.run {
             verticalLayout {
-                val toolbar = themedToolbar(R.style.AppTheme_Toolbar)
+                toolbar(baseToolBar)
                         .lparams(matchParent, attrDimen(R.attr.actionBarSize))
-                owner.setSupportActionBar(toolbar)
+                        .apply { setSupportActionBar(this) }
                 swipeRefreshLayout {
-                    viewModel.isRefreshing.observe(owner) { isRefreshing = it }
+                    viewModel.isRefreshing.observe { isRefreshing = it }
                     onRefresh { viewModel.news() }
                     recyclerView {
-                        isVerticalScrollBarEnabled = true
-                        scrollBarStyle = View.SCROLLBARS_INSIDE_OVERLAY
                         layoutManager = LinearLayoutManager(ctx)
                         addItemDecoration(DividerItemDecoration(ctx, LinearLayoutManager.VERTICAL))
                         endlessAdapter(
                                 headAdapter(false) {
-                                    adapter = baseAdapter<Story>(false) {
-                                        viewModel.stories.observe(owner) {
-                                            if (viewModel.newData) setData(it) else add(it)
-                                        }
-                                        item { source ->
-                                            relativeLayout {
-                                                backgroundResource = attrRes(R.attr.selectableItemBackground)
-                                                val image = simpleDraweeView {
-                                                    id = R.id.image
-                                                    padding = dip(8)
-                                                    transitionNameCompat = "shared_image"
-                                                    source.subscribe { setImageURI(it.images[0]) }
-                                                }.lparams(dip(100), matchParent)
-                                                textView {
-                                                    source.subscribe { text = it.title }
-                                                }.lparams(matchParent, matchParent) {
-                                                    margin = dip(8)
-                                                    rightOf(image)
-                                                }
-                                            }.lparams(matchParent, dip(100))
-                                        }
-                                        itemClick { toDetail(it.id) }
-                                    }
-                                    addHeaderView(owner.UI(false) {
+                                    addHeaderView(UI(false) {
                                         convenientBanner<TopStory> {
                                             setPageTransformer(AccordionTransformer())
-                                            setOnItemClickListener { }
+                                            setOnItemClickListener { toDetail(this, viewModel.topStories.value!![it].id) }
+                                            ui.owner.lifecycle.addObserver(GenericLifecycleObserver { _, event ->
+                                                @Suppress("NON_EXHAUSTIVE_WHEN")
+                                                when (event) {
+                                                    Lifecycle.Event.ON_RESUME -> startTurning(4000)
+                                                    Lifecycle.Event.ON_PAUSE -> stopTurning()
+                                                }
+                                            })
                                             viewModel.topStories.observe(ui.owner) {
                                                 setPages({
                                                     convenientHolder<TopStory> { data ->
@@ -157,14 +160,37 @@ class MainUI(private val viewModel: MainViewModel) : AnkoComponent<MainActivity>
                                             }
                                         }.lparams(matchParent, dimen(R.dimen.app_bar_large))
                                     }.view)
+                                    adapter = baseAdapter<Story>(false) {
+                                        viewModel.stories.observe {
+                                            if (viewModel.isNewData) setData(it) else add(it)
+                                        }
+                                        item { source ->
+                                            relativeLayout {
+                                                backgroundResource = attrRes(R.attr.selectableItemBackground)
+                                                simpleDraweeView {
+                                                    id = R.id.image
+                                                    padding = dip(8)
+                                                    transitionNameCompat = owner.getString(R.string.shared_img)
+                                                    source.subscribe { setImageURI(it.firstImage) }
+                                                }.lparams(dip(100), matchParent)
+                                                textView {
+                                                    source.subscribe { text = it.title }
+                                                }.lparams(matchParent, matchParent) {
+                                                    margin = dip(8)
+                                                    rightOf(R.id.image)
+                                                }
+                                            }.lparams(matchParent, dip(100))
+                                        }
+                                        itemClick { _, position -> toDetail(itemView.find(R.id.image), getItem(position - 1).id) }
+                                    }
                                 },
-                                onLoadMore = { viewModel.newBefore() },
+                                onLoadMore = { viewModel.newsBefore() },
                                 loadView = R.layout.item_load_more
                         ) {
-                            viewModel.isLoadingMore.observe(owner) {
+                            viewModel.isLoadingMore.observe {
                                 if (!it) onDataReady(viewModel.hasMoreData.value!!)
                             }
-                            viewModel.hasMoreData.observe(owner) {
+                            viewModel.hasMoreData.observe {
                                 if (it) restartAppending() else stopAppending()
                             }
                         }
@@ -172,6 +198,6 @@ class MainUI(private val viewModel: MainViewModel) : AnkoComponent<MainActivity>
                     }
                 }.lparams(matchParent, matchParent)
             }
-        }.view
+        }
     }
 }

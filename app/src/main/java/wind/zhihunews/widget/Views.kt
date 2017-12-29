@@ -43,10 +43,6 @@ fun <T> convenientHolder(init: AnkoContext<Context>.(Subject<T>) -> View): Holde
     }
 }
 
-class ConvenientHolderBuilder<T> {
-    lateinit var item: (Context, Subject<T>) -> View
-}
-
 
 inline fun <D> RecyclerView.baseAdapter(attachToRecyclerView: Boolean = true,
                                         init: BaseAdapter<D>.() -> Unit): BaseAdapter<D> {

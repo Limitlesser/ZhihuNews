@@ -43,7 +43,7 @@ class SplashActivity : BaseActivity() {
 }
 
 
-class SplashUI() : AnkoComponent<SplashActivity> {
+class SplashUI : AnkoComponent<SplashActivity> {
 
     lateinit var image: ImageView
 
@@ -57,8 +57,7 @@ class SplashUI() : AnkoComponent<SplashActivity> {
                 textView {
                     textResource = R.string.app_name
                     textColor = Color.WHITE
-                    typeface = Typeface.create(null as String?, Typeface.BOLD)
-                    textSize = 22f
+                    textSize = 20f
                 }.lparams {
                     gravity = Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM
                     bottomMargin = dip(30)

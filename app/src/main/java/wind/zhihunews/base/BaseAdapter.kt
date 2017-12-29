@@ -1,5 +1,6 @@
 package wind.zhihunews.base
 
+import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.util.SparseArray
 import android.view.View
@@ -63,18 +64,20 @@ open class BaseAdapter<D> : RecyclerView.Adapter<BaseAdapter<D>.ItemHolder>() {
         notifyDataSetChanged()
     }
 
+    fun getItem(position: Int): D = data[position]
+
     private val itemHolder: SparseArray<((ViewGroup, Observable<D>) -> View)> = SparseArray(1)
 
-    private var itemClick: ((ItemHolder, D) -> Unit)? = null
+    private var itemClick: ((ItemHolder, D, Int) -> Unit)? = null
 
-    fun item(viewType: Int = 0, init: AnkoContext<ViewGroup>.(Observable<D>) -> View) {
+    fun item(viewType: Int = 0, init: AnkoContext<Context>.(Observable<D>) -> View) {
         itemHolder[viewType] = { parent, dataSource ->
-            AnkoContext.create(parent.context, parent).init(dataSource)
+            AnkoContext.create(parent.context).init(dataSource)
         }
     }
 
-    fun itemClick(block: ItemHolder.(D) -> Unit) {
-        itemClick = { holder, data -> holder.block(data) }
+    fun itemClick(block: ItemHolder.(D, Int) -> Unit) {
+        itemClick = { holder, data, position -> holder.block(data, position) }
     }
 
 
@@ -83,7 +86,7 @@ open class BaseAdapter<D> : RecyclerView.Adapter<BaseAdapter<D>.ItemHolder>() {
         val holder = ItemHolder(subject, itemHolder[viewType]!!(parent, subject))
         itemClick?.let {
             holder.itemView.setOnClickListener {
-                itemClick?.invoke(holder, data[holder.adapterPosition])
+                itemClick?.invoke(holder, data[holder.adapterPosition], holder.adapterPosition)
             }
         }
         return holder

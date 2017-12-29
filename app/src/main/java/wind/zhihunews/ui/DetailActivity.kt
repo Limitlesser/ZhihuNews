@@ -3,9 +3,11 @@ package wind.zhihunews.ui
 import android.annotation.SuppressLint
 import android.arch.lifecycle.MutableLiveData
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.CollapsingToolbarLayout
+import android.transition.AutoTransition
 import android.view.Gravity
 import android.view.View
 import android.view.View.GONE
@@ -13,10 +15,10 @@ import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import android.webkit.WebView
 import org.jetbrains.anko.*
-import org.jetbrains.anko.appcompat.v7.themedToolbar
+import org.jetbrains.anko.appcompat.v7.toolbar
 import org.jetbrains.anko.design.appBarLayout
+import org.jetbrains.anko.design.collapsingToolbarLayout
 import org.jetbrains.anko.design.coordinatorLayout
-import org.jetbrains.anko.design.themedCollapsingToolbarLayout
 import org.jetbrains.anko.support.v4.nestedScrollView
 import wind.zhihunews.R
 import wind.zhihunews.base.BaseActivity
@@ -24,9 +26,7 @@ import wind.zhihunews.model.StoryDetail
 import wind.zhihunews.net.api
 import wind.zhihunews.service.NewsService
 import wind.zhihunews.util.observe
-import wind.zhihunews.widget.attrDimen
-import wind.zhihunews.widget.simpleDraweeView
-import wind.zhihunews.widget.transitionNameCompat
+import wind.zhihunews.widget.*
 
 
 class DetailActivity : BaseActivity() {
@@ -36,6 +36,10 @@ class DetailActivity : BaseActivity() {
         val viewModel = DetailViewModel(NewsService(api))
         DetailUI(viewModel).setContentView(this)
         viewModel.storyDetail(intent.getIntExtra("id", 0))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.sharedElementEnterTransition = AutoTransition()
+            window.sharedElementExitTransition = AutoTransition()
+        }
     }
 }
 
@@ -48,7 +52,7 @@ class DetailViewModel(val newsService: NewsService) {
     }
 }
 
-class DetailUI(val viewModel: DetailViewModel) : AnkoComponent<DetailActivity> {
+class DetailUI(private val viewModel: DetailViewModel) : AnkoComponent<DetailActivity> {
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun createView(ui: AnkoContext<DetailActivity>): View {
@@ -56,17 +60,19 @@ class DetailUI(val viewModel: DetailViewModel) : AnkoComponent<DetailActivity> {
             coordinatorLayout {
                 appBarLayout {
                     id = R.id.app_bar
-                    themedCollapsingToolbarLayout(R.style.AppTheme_CollapsingToolbar) {
+                    collapsingToolbarLayout {
+                        applyStyle(collapsingToolbar)
                         viewModel.storyDetail.observe(owner) { title = it.title }
                         simpleDraweeView {
-                            transitionNameCompat = "shared_img"
+                            transitionNameCompat = owner.getString(R.string.shared_img)
                             viewModel.storyDetail.observe(owner) { setImageURI(it.image) }
                             layoutParams = CollapsingToolbarLayout.LayoutParams(matchParent, matchParent).apply {
                                 collapseMode = CollapsingToolbarLayout.LayoutParams.COLLAPSE_MODE_PARALLAX
                                 parallaxMultiplier = 0.7f
                             }
                         }
-                        val toolbar = themedToolbar(R.style.AppTheme_Toolbar_Navigation) {
+                        val toolbar = toolbar {
+                            applyStyle(navigateToolbar)
                             backgroundColor = Color.TRANSPARENT
                             layoutParams = CollapsingToolbarLayout.LayoutParams(matchParent, attrDimen(R.attr.actionBarSize)).apply {
                                 collapseMode = CollapsingToolbarLayout.LayoutParams.COLLAPSE_MODE_PIN

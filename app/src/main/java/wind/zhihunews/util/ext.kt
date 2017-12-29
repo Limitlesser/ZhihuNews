@@ -7,6 +7,7 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
 import android.support.v4.content.ContextCompat
 import android.support.v4.util.LruCache
@@ -28,6 +29,11 @@ inline fun Context.drawable(@DrawableRes id: Int): Drawable =
         ContextCompat.getDrawable(this, id)!!
 
 inline fun <T> AnkoContext<T>.drawable(@DrawableRes id: Int) = ctx.drawable(id)
+
+inline fun Context.color(@ColorRes id: Int): Int =
+        ContextCompat.getColor(this, id)
+
+inline fun <T> AnkoContext<T>.color(@ColorRes id: Int) = ctx.color(id)
 
 inline fun <T> LiveData<T>.observe(owner: LifecycleOwner, crossinline observer: (T) -> Unit) {
     observe(owner, Observer { observer(it!!) })
